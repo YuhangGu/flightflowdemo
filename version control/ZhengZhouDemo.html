@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script>L_DISABLE_3D = true;</script>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+    <link rel="stylesheet" type="text/css" href="css/Mapboxinveststyle.css">
+    <title>Flow Maps with MapBox</title>
+  </head>
+  <body>
+    <div id="intro">
+      <h2>Flow Maps with MapBox</h2>
+    </div>
+    <div id="loading">
+      <h5 id="loading-text">Loading...</h5>
+    </div>
+    <div id="container" style="opacity:8;"></div>
+    <div id="menu"></div>
+    <div id="icons">
+      <img src="css/img/single.png">
+      <img src="css/img/pinch.png">
+      <img src="css/img/triple.png">
+    </div>
+    <script src="lib/three.min.js"></script>
+    <script src="lib/tween.js"></script>
+    <script src="lib/CSS3DRenderer.js"></script>
+    <script src="lib/TrackballControls.js"></script>
+    <script src="lib/d3.min.js"></script>
+    <script src="js/mapboxZhengzhou.js"></script>
+    <script>
+      d3.json("data/QiujunData.json", function (error, data) {
+        //**************************************
+        //  MAKE MAP LIST WITH TITLES
+        //**************************************
+        var maps = [];
+        var cncr = data;
+        var mapstyles = ["mapbox.streets",
+                          "mapbox.light",
+                          "mapbox.dark",
+                          "mapbox.satellite",
+                          "mapbox.streets-satellite",
+                          "mapbox.wheatpaste",
+                          "mapbox.streets-basic",
+                          "mapbox.comic",
+                          "mapbox.outdoors",
+                          "mapbox.run-bike-hike",
+                          "mapbox.pencil",
+                          "mapbox.pirates",
+                          "mapbox.emerald",
+                          "mapbox.high-contrast"
+                        ];
+
+        var i = 0;
+        for (var key in cncr) {
+
+          maps.push({
+            elem: key,
+            title: cncr[key].title,
+            style: mapstyles[i]
+          });
+          i++;
+          if( i == 13)
+          {
+            i = i -13;
+          }
+
+        }
+
+        //console.log("maps",maps);
+
+        //**************************************
+        //  CREATE BUTTONS
+        //**************************************
+        d3.select("#menu").selectAll('button')
+          .data(['sphere', 'grid','helix']).enter()
+            .append('button')
+            .html(function (d) { return d; })
+            .on('click', function (d) { VIZ.transform(d); })
+
+        //**************************************
+        //  DRAW MAPS and ANIMATE
+        //**************************************
+        VIZ.drawElements(maps, data);
+        VIZ.transform('helix');
+        d3.select("#loading").transition().duration(2500).style("opacity", 0);
+        d3.select("#container").transition().duration(3500).style("opacity", 1);
+        VIZ.render();
+        VIZ.animate();
+        window.addEventListener('resize', VIZ.onWindowResize, false);
+      });
+    </script>
+  </body>
+</html>

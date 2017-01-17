@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Iceland Flight</title>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.js"></script>
+    <script src="js/d3.geo.projection.v0.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.4/c3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/canvasjs.min.js"></script>
+    <script src="http://d3js.org/d3.geo.projection.v0.min.js" charset="utf-8"></script>
+    <script src="js/d3.geo.projection.v0.min.js"></script>
+    <script src="http://d3js.org/topojson.v0.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-axis.v1.min.js"></script>
+    <script src="https://d3js.org/d3-array.v1.min.js"></script>
+    <script src="https://d3js.org/d3-collection.v1.min.js"></script>
+    <script src="https://d3js.org/d3-color.v1.min.js"></script>
+    <script src="https://d3js.org/d3-format.v1.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+    <script src="https://d3js.org/d3-time.v1.min.js"></script>
+    <script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+    <script src="https://d3js.org/d3-scale.v1.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0"></script>
+    <script src="https://cdn.rawgit.com/Neilos/bihisankey/master/bihisankey.js"></script>
+    <!--script src="js/sankeydemo.js"></script-->
+    <link href="css/c3.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/icelandstyle.css" />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <!--link href="css/sankeydemo.css" rel="stylesheet"-->
+
+</head>
+
+<body style="padding-left: 10px;">
+
+<div class="container-fluid main">
+    <div class="row">
+        <div class="col-xs-12 bg-none">
+
+            <div class="row" id="toprow">
+                <div class="col-xs-12" align="center">
+                    <h3>Iceland Flight During One Day</h3>
+                </div>
+            </div>
+
+            <div class="row row-map" id="midrow">
+
+                <div class="col-xs-7 col-sm-7 col-md-7" id="maincontainer" margin="5">
+                        <div class="basemap" id="map" align="center" width="100%" height="100%"></div>
+                        <div class='map-overlay top'>
+                            <div class='map-overlay-inner'>
+                                <h4 align="center">Iceland flight from 2004 to 2016</h4>
+                                <div align="right" width="30%" height="10px"> <label id='year'> 2004 </label> </div>
+                                <input id='slider' type='range' min='2004' max='2016' step='1' value='2004'/>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="col-xs-5 col-sm-5 col-md-5">
+
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12"  id="barchartcontainer" align="center">
+                                <div id="d3barchart"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12" id="sankeychartcontainer" align="center">
+                            <div id="chordchart"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row" id="bottomrow"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    /*--------------------------------------------------------------------------*/
+
+    //Width and height
+    var map_width = 600, map_height = 600;
+    var formatC = d3.format(",.0f");
+    var formatD = d3.format("+,.0f");
+
+    //---------------The Data--------------------------------------------------------------------*/
+    var flightfrequenceArr = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+    var flightYearMap = initTimebyYear();
+    var timeTableMap = initTimebyHour();
+
+    var max = 775;
+    var maxinhour = 0;
+    var ODmatrix = [];
+    //var ODmatrix_map = d3.map();
+
+
+    var airportcount = d3.map();
+    var airportlinescountmax = 0;
+    //--------------------------graphic part-------------------
+    var projection = d3.geo.azimuthalEquidistant()
+            .scale(150)
+            .translate([map_width / 2, map_height / 2])
+            .clipAngle(180 - 1e-3)
+            .precision(.1);
+
+    //Define path generator
+    var path = d3.geo.path().projection(projection);
+
+    var svg = d3.select("#map").append("svg")
+            .attr("width", map_width)
+            .attr("height", map_height).append("g")
+            .attr("transform", "rotate(0,180,180)")
+            .attr("transform", "translate(" + (-30)+"," + 50 + ")");
+
+    var g_airports = svg.append('g')
+            .attr('class','airport');
+
+    var svg_bar = d3.select("#d3barchart").append("svg");
+
+    //var svg_sankey = d3.select("#sankeychart").append("svg");
+    var svg_chord = d3.select("#chordchart").append("svg");
+
+    //create axis
+
+    var colors = ["#EDF8FB", "#41083e"];
+
+    var immdomain = [98, 2184]; // min max total number immigrations
+    var emmdomain = [146, 2062]; // min max total number emmigrations
+
+    var circleSize = d3.scale.linear().range([0, 500]).domain([0, 5000]);
+
+    var lineSize = d3.scale.linear().range([2, 10]).domain([0, 2500]);
+
+    var fillcolor = d3.scale.linear().range(colors).domain(immdomain);
+
+    var label_year = document.getElementById('year');
+
+    //Create SVG element
+    var zoom = d3.behavior.zoom()
+            .translate([0, 0])
+            .scale(1)
+            .scaleExtent([1, 8])
+            .on("zoom", zoomed);
+
+    var fp = d3.format(".1f");
+
+    //initialize html tooltip
+    var tooltip = d3.select("#maincontainer")
+            .append("div")
+            .attr("id", "tt")
+            .style("z-index", "10")
+            .style("position", "absolute")
+            .style("visibility", "hidden");
+
+    var tooltip2 = d3.select("#maincontainer")
+            .append("div")
+            .attr("id", "tt2")
+            .style("z-index", "10")
+            .style("position", "absolute")
+            .style("visibility", "hidden");
+
+    var g_basemap = svg.append("g")
+            .attr("class","basemap");
+
+    var g_flows = svg.append("g")
+            .attr("class","flow");
+
+    var g_flowsArr = [];
+
+    //----------process part----------========--------==========----------
+    var i ;
+    for( i = 0 ; i < 24; i++)
+    {
+        var gtemp = svg.append("g").attr("id", i.toString());
+        g_flowsArr.push(gtemp);
+    }
+
+    var color = d3.scale.quantize()
+            .domain([0, 23])
+            .range(["#FF0000","#0000FF"]);
+
+    var layer_id_last = "id0";
+    var layer_id_this = "id0";
+
+    var rect_id_last;
+
+    //var arrayNodes = [];
+    //var arrayLinks = [];
+
+    var arrayNodes = [
+        {"name" : "amsterdam"},
+        {"name" : "enschede"},
+        {"name" : "rotterdam"}
+    ];
+    var arrayLinks = [
+        {
+            "source": 0,
+            "target": 2,
+            "value": 120
+        },
+        {
+            "source": 1,
+            "target": 2,
+            "value": 12
+        },
+        {
+            "source": 0,
+            "target": 1,
+            "value": 30
+        }
+    ];
+
+    //temp
+    var frequencetemp = [];
+
+    readAirLinesbyTime(prepareDataINHour("2004", drawbarchart, drawChordChart), maximumOverAll,initODmatirx);
+
+    drawBaseMap();
+
+    //drawAirports();
+
+   // drawbarchart();
+    //drawAirLines( playAnimation );
+
+    document.getElementById('slider').addEventListener('input', function (e) {
+        //var hour = parseInt(e.target.value, 10);
+        var year = parseInt(e.target.value, 10);
+        layer_id_this = 'id' + e.target.value;
+        label_year.textContent = e.target.value;
+
+        //showthishour(hour);
+        showThisYear(year);
+        drawAirports(year);
+        //drawbarchart(e.target.value);
+        prepareDataINHour(year, drawbarchart,drawChordChart(year));
+    });
+
+    d3.select(self.frameElement).style("height", map_height + "px");
+    /*----------------------------------------------------------------------------*/
+
+    function clearOldLayer(callback){
+        //console.log("layer_id_last before remove",layer_id_last);
+        svg.selectAll('#' + layer_id_last).remove();
+        setTimeout(callback,2000);
+        layer_id_last = layer_id_this;
+    }
+
+    function drawAirports(year) {
+
+        year = year - 2004;
+
+        g_airports.selectAll("#airport").remove();
+        //console.log("year", year);
+
+
+        airportcount.each(function(d, i ){
+
+
+            if(d[1] == -1){
+                console.log("error");
+            }
+
+            if(d[year + 3] != 0)
+            {
+                g_airports.append("circle")
+                        .attr("id", "airport")
+                        .attr("cx", function () {
+                            return projection([d[1], d[2]])[0];
+
+                        })
+                        .attr("cy", function () {
+                            return projection([d[1], d[2]])[1];
+                        })
+                        .attr("r", 2)
+                        .attr("fill", "#1e4179");
+            }
+
+
+
+        });
+
+
+
+
+
+        /*
+        d3.json("data/airport.json", function (airports) {
+            //console.log(airports);
+            g.selectAll("circle")
+                    .data(airports)
+                    .enter()
+                    .append("circle")
+                    .attr("cx", function (d) {
+                        return projection([d.longitude, d.latitude])[0];
+                    })
+                    .attr("cy", function (d) {
+                        return projection([d.longitude, d.latitude])[1];
+                    })
+                    .attr("r", 1);
+        });
+        */
+
+    }
+
+    function drawAirLines( callback ) {
+
+        d3.json("data/timeandflow.json", function (flights) {
+
+            flights.features.forEach(function (d) {
+
+                var timestring = d.properties.deptime_1.substr(0,2);
+                var index = parseInt(timestring, 10);
+                var pathflow = g_flowsArr[index].append("path")
+                        .attr("stroke", color(index))
+                        .attr("stroke-width", 0.5)
+                        .attr("fill", "none")
+                        .attr("opacity", 0)
+                        .attr("class", "flows")
+                        .attr("d", function () {
+                            return drawArcs(projection, d.geometry.coordinates);
+                        })
+                        .on("mouseover", function (d, i) {
+                            d3.select(this).attr("stroke", "#ffff00")
+                                    .attr("stroke-width", 2)
+                                    .attr("id", "lastselected");
+                        })
+                        .on("mouseout", function (d, i) {
+                            d3.select("#lastselected").attr("stroke", "rgb(60,120,155)")
+                                    .attr("stroke-width", 0.5)
+                                    .attr("id", "flows");
+                        });
+
+            });
+
+
+
+        });
+
+        //console.log("airportcount", airportcount);
+        setTimeout(callback, 20);
+    }
+
+    function drawLines(projection, arr) {
+        var point_0_x, point_0_y,
+                point_1_x,point_1_y,
+                point_2_x,point_2_y;
+
+        //console.log(arr.length);
+        if (arr.length == 2)
+        {
+            point_0_x = arr[0][0];
+            point_0_y = arr[0][1];
+            point_1_x = arr[1][0];
+            point_1_y = arr[1][1];
+            var dx = projection([point_1_x, point_1_y])[0]
+                            - projection([point_0_x, point_0_y])[0],
+                    dy = projection([point_1_x, point_1_y])[1]
+                            - projection([point_0_x, point_0_y])[1],
+                    dr = Math.sqrt(dx * dx + dy * dy);
+
+            if (dx < 0) {
+                return "M" + projection([point_1_x, point_1_y])[0]
+                        + "," + projection([point_1_x, point_1_y])[1]
+                        + "L" + projection([point_0_x, point_0_y])[0]
+                        + "," + projection([point_0_x, point_0_y])[1];
+            }
+            else {
+                return "M" + projection([point_0_x, point_0_y])[0]
+                        + "," + projection([point_0_x, point_0_y])[1]
+                        + "L" + projection([point_1_x, point_1_y])[0]
+                        + "," + projection([point_1_x, point_1_y])[1];
+            }
+
+        }
+        else if (arr.length == 3)
+        {
+            point_0_x = arr[0][0];
+            point_0_y = arr[0][1];
+            point_1_x = arr[1][0];
+            point_1_y = arr[1][1];
+            point_2_x = arr[2][0];
+            point_2_y = arr[2][1];
+
+            var dx = projection([point_1_x, point_1_y])[0]
+                            - projection([point_0_x, point_0_y])[0],
+                    dy = projection([point_1_x, point_1_y])[1]
+                            - projection([point_0_x, point_0_y])[1],
+                    dr = Math.sqrt(dx * dx + dy * dy);
+
+            var dx_1 = projection([point_1_x, point_1_y])[0]
+                            - projection([point_0_x, point_0_y])[0],
+                    dy_1 = projection([point_1_x, point_1_y])[1]
+                            - projection([point_0_x, point_0_y])[1],
+                    dr_1 = Math.sqrt(dx_1 * dx_1 + dy_1 * dy_1);
+
+
+            if (dx < 0) {
+
+                if( dx_1 < 0 ){
+                    return "M" + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1]
+                            + "L" + projection([point_0_x, point_0_y])[0]
+                            + "," + projection([point_0_x, point_0_y])[1]
+                            + "M" + projection([point_2_x, point_2_y])[0]
+                            + "," + projection([point_2_x, point_2_y])[1]
+                            + "L" +  projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1];
+                }
+                else{
+                    return "M" + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1]
+                            + "L" +  projection([point_0_x, point_0_y])[0]
+                            + "," + projection([point_0_x, point_0_y])[1]
+                            + "M" + projection([point_2_x, point_2_y])[0]
+                            + "," + projection([point_2_x, point_2_y])[1]
+                            + "L" + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1];
+                }
+
+
+            }
+            else {
+                if(dx_1 < 0){
+                    return "M" + projection([point_0_x, point_0_y])[0]
+                            + "," + projection([point_0_x, point_0_y])[1]
+                            + "L"  + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1] +
+                            "M" + projection([point_2_x, point_2_y])[0]
+                            + "," + projection([point_2_x, point_2_y])[1]
+                            + "L" + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1];
+
+                }
+                else{
+                    return "M" + projection([point_0_x, point_0_y])[0]
+                            + "," + projection([point_0_x, point_0_y])[1]
+                            + "L" + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1] +
+                            "M" + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1]
+                            + "L" +  projection([point_2_x, point_2_y])[0]
+                            + "," + projection([point_2_x, point_2_y])[1];
+                }
+
+            }
+
+        }
+        else
+        {
+            console.log("fuck, there must be something worng");
+        }
+
+    }
+
+
+    function drawArcs(projection, arr) {
+        var point_0_x, point_0_y,
+                point_1_x,point_1_y,
+                point_2_x,point_2_y;
+
+        //console.log(arr.length);
+        if (arr.length == 2)
+        {
+            point_0_x = arr[0][0];
+            point_0_y = arr[0][1];
+            point_1_x = arr[1][0];
+            point_1_y = arr[1][1];
+            var dx = projection([point_1_x, point_1_y])[0]
+                            - projection([point_0_x, point_0_y])[0],
+                    dy = projection([point_1_x, point_1_y])[1]
+                            - projection([point_0_x, point_0_y])[1],
+                    dr = Math.sqrt(dx * dx + dy * dy);
+
+            if (dx < 0) {
+                return "M" + projection([point_1_x, point_1_y])[0]
+                        + "," + projection([point_1_x, point_1_y])[1]
+                        + "A" + dr + "," + dr +
+                        " 0 0,1 " + projection([point_0_x, point_0_y])[0]
+                        + "," + projection([point_0_x, point_0_y])[1];
+            }
+            else {
+                return "M" + projection([point_0_x, point_0_y])[0]
+                        + "," + projection([point_0_x, point_0_y])[1]
+                        + "A" + dr + "," + dr +
+                        " 0 0,1 " + projection([point_1_x, point_1_y])[0]
+                        + "," + projection([point_1_x, point_1_y])[1];
+            }
+
+        }
+        else if (arr.length == 3)
+        {
+            point_0_x = arr[0][0];
+            point_0_y = arr[0][1];
+            point_1_x = arr[1][0];
+            point_1_y = arr[1][1];
+            point_2_x = arr[2][0];
+            point_2_y = arr[2][1];
+
+            var dx = projection([point_1_x, point_1_y])[0]
+                            - projection([point_0_x, point_0_y])[0],
+                    dy = projection([point_1_x, point_1_y])[1]
+                            - projection([point_0_x, point_0_y])[1],
+                    dr = Math.sqrt(dx * dx + dy * dy);
+
+            var dx_1 = projection([point_1_x, point_1_y])[0]
+                            - projection([point_0_x, point_0_y])[0],
+                    dy_1 = projection([point_1_x, point_1_y])[1]
+                            - projection([point_0_x, point_0_y])[1],
+                    dr_1 = Math.sqrt(dx_1 * dx_1 + dy_1 * dy_1);
+
+
+            if (dx < 0) {
+
+                if( dx_1 < 0 ){
+                    return "M" + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1]
+                            + "A" + dr + "," + dr +
+                            " 0 0,1 " + projection([point_0_x, point_0_y])[0]
+                            + "," + projection([point_0_x, point_0_y])[1]
+                            + "M" + projection([point_2_x, point_2_y])[0]
+                            + "," + projection([point_2_x, point_2_y])[1]
+                            + "A" + dr_1 + "," + dr_1 +
+                            " 0 0,1 " + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1];
+                }
+                else{
+                    return "M" + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1]
+                            + "A" + dr + "," + dr +
+                            " 0 0,1 " + projection([point_0_x, point_0_y])[0]
+                            + "," + projection([point_0_x, point_0_y])[1]
+                            + "M" + projection([point_2_x, point_2_y])[0]
+                            + "," + projection([point_2_x, point_2_y])[1]
+                            + "A" + dr_1 + "," + dr_1 +
+                            " 0 0,1 " + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1];
+                }
+
+
+            }
+            else {
+                if(dx_1 < 0){
+                    return "M" + projection([point_0_x, point_0_y])[0]
+                            + "," + projection([point_0_x, point_0_y])[1]
+                            + "A" + dr + "," + dr +
+                            " 0 0,1 " + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1] +
+                            "M" + projection([point_2_x, point_2_y])[0]
+                            + "," + projection([point_2_x, point_2_y])[1]
+                            + "A" + dr_1 + "," + dr_1 +
+                            " 0 0,1 " + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1];
+
+                }
+                else{
+                    return "M" + projection([point_0_x, point_0_y])[0]
+                            + "," + projection([point_0_x, point_0_y])[1]
+                            + "A" + dr + "," + dr +
+                            " 0 0,1 " + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1] +
+                            "M" + projection([point_1_x, point_1_y])[0]
+                            + "," + projection([point_1_x, point_1_y])[1]
+                            + "A" + dr_1 + "," + dr_1 +
+                            " 0 0,1 " + projection([point_2_x, point_2_y])[0]
+                            + "," + projection([point_2_x, point_2_y])[1];
+                }
+
+            }
+
+        }
+        else
+        {
+            console.log("fuck, there must be something worng");
+        }
+
+    }
+
+    function drawBaseMap() {
+
+        d3.json("data/world-110m.json", function (error, world) {
+
+            g_basemap.append("path", ".circle")
+                    .datum(topojson.object(world, world.objects.land))
+                    .attr("class", "land")
+                    .attr("d", path);
+        });
+
+    }
+
+
+    function drawbarchart(){
+
+        var width = 480, height = 320;
+        var padding = { top: 10 , right: 10, bottom: 10, left: 5 };
+
+        svg_bar.selectAll('g').remove();
+        svg_bar.selectAll('text').remove();
+
+        svg_bar.attr("width", width)
+                .attr("height", height);
+
+        //console.log("axis",axis);
+
+
+
+        // aixs_x
+        var xAixsList = ["00","01","02","03","04","05","06","07", "08","09","10","11",
+                        "12","13","14","15","16","17","18","19","20","21","22","23"];
+
+        var scale_axis_x = d3.scaleBand().domain(xAixsList).range([0, 500]).padding(5);
+        var axis_x = d3.axisBottom(scale_axis_x);
+
+        svg_bar.append('g')
+                .attr("class", "axis")
+                .attr("width", width)
+                .attr("height", 0)
+                .attr("transform", "rotate( 90)")
+                .attr("transform", "translate(" + (padding.left + padding.right) +"," + (height - padding.top-2*padding.bottom) + ")")
+                .call(axis_x);
+
+        svg_bar.append("text")
+                .attr('id','axislabelX')
+                .attr('x', 360)
+                .attr('y', 350)
+                .text("Departure Time (hour)");
+
+        svg_bar.append("text")
+                .attr('id','axislabelY')
+                .attr('x', 30)
+                .attr('y', padding.top)
+                .text("Flight number");
+
+        // aixs_y
+        var scale_axis_y = d3.scaleLinear().domain([0, max]).range([ height - padding.top - 2 * padding.bottom , 0]);
+        var axis_y = d3.axisLeft(scale_axis_y).ticks(10);
+        svg_bar.append('g')
+                .attr("class", "axis")
+                .attr("width", 0)
+                .attr("height", height)
+                .attr("transform", "translate(" + 20 +"," + 0 + ")")
+                .call(axis_y);
+
+        var rect_bar = svg_bar.append("g")
+                .attr("transform","translate(" + padding.left + "," +
+                        ( - padding.bottom ) +  ")");
+
+        maxinhour = d3.max(frequencetemp);
+
+        var liner = d3.scale.linear().domain([0,max]).range([height - padding.top - padding.bottom, 0]);
+
+        var width_rect = scale_axis_x.step()*0.8 ;
+        rect_bar.selectAll('rect').data(frequencetemp)
+                .enter()
+                .append('rect')
+                .attr('class', 'barchartrect')
+                .attr('width', width_rect)
+                .attr('id', function(d, i){
+                    return "rect" + i.toString();
+                })
+                .attr('height',  function (d,i){
+                    return height - padding.top - padding.bottom - liner(frequencetemp[i]);
+                })
+                .attr('x', function(d,i){
+                    return i * scale_axis_x.step() - padding.left + 0.5 * width_rect + 30;
+                })
+                .attr('y', function(d,i){
+                    return liner(frequencetemp[i]);
+                });
+
+    }
+
+    function drawNewLayer(flightArrthisyear){
+        //console.log("flightArrthishour",flightArrthisyear);
+
+        flightArrthisyear.each( function(dhours, ihours){
+
+            //console.log("dhours", dhours);
+            svg.append('g').selectAll("line")
+                    .data(dhours)
+                    .enter()
+                    .append("line")
+                    .attr("stroke", "#ff688b")
+                    .attr("stroke-width", 0.5)
+                    .attr("opacity", 0.5)
+                    .attr("id", layer_id_this)
+                    .attr("x1", function(d) { return projection(d[0])[0];  })
+                    .attr("y1", function(d) { return projection(d[0])[1];  })
+                    .attr("x2", function(d) { return projection(d[1])[0];  })
+                    .attr("y2", function(d) { return projection(d[1])[1];  });
+
+
+            svg.append('g').selectAll("line")
+                    .data(dhours)
+                    .enter()
+                    .append("line")
+                    .attr("stroke", "#4e7b69")
+                    .attr("stroke-width", 0.5)
+                    .attr("opacity", 0.5)
+                    .attr("id", layer_id_this)
+                    .attr("stroke-width", 1)
+                    .attr("x1", function(d) {
+                        return projection(d[1])[0];
+                    })
+                    .attr("y1", function(d) {
+                        return projection(d[1])[1];
+                    })
+                    .attr("x2", function(d) {
+                        if(d.length == 3){
+                            return projection(d[2])[0];
+                        }
+                        else{
+                            return projection(d[1])[0];
+                        }
+                    })
+                    .attr("y2", function(d) {
+                        if(d.length == 3){
+                            return projection(d[2])[1];
+                        }
+                        else{
+                            return projection(d[1])[1];
+                        }
+                    });
+
+
+            //befor 12-14
+            /*
+            dhours.forEach(function (d, i ){
+
+                svg.append("path")
+                        .attr("stroke", function(){
+                            if(d.length == 2){
+                                return "#00ff00";
+                            }
+                            else {
+                                return "#ff0000";
+                            }
+                        })
+                        .attr("stroke-width", 0.5)
+                        .attr("fill", "none")
+                        .attr("opacity", 0.5)
+                        .attr("id", layer_id_this)
+                        .attr("d", function () {
+                            return drawLines(projection, d);
+                            //return drawArcs(projection, d);
+                        })
+                        .on("mouseover", function (d, i) {
+                            d3.select(this).attr("stroke", "#ffff00")
+                                    .attr("stroke-width", 2)
+                                    .attr("id", "lastselected");
+                        })
+                        .on("mouseout", function (d, i) {
+                            d3.select("#lastselected").attr("stroke", "rgb(60,120,155)")
+                                    .attr("stroke-width", 0.5)
+                                    .attr("id", "flows");
+                        });
+
+
+
+            });
+            */
+
+
+
+        });
+
+    }
+
+    function drawChordChart(year){
+
+        svg_chord.selectAll('g').remove();
+
+        var index = year - 2004;
+        var matrix = ODmatrix[index];
+
+        //console.log("matrix",ODmatrix);
+
+        svg_chord.attr("width", 300)
+                .attr("height", 300);
+
+        var width = + svg_chord.attr("width"),
+                height = +svg_chord.attr("height"),
+                outerRadius = Math.min(width, height) * 0.5 - 40,
+                innerRadius = outerRadius - 30;
+
+        var formatValue = d3.formatPrefix(",.0", 1e3);
+
+        var chord = d3.chord()
+                .padAngle(0.05)
+                .sortSubgroups(d3.descending);
+
+        //console.log("chord", chord(matrix));
+
+        var arc = d3.arc()
+                .innerRadius(innerRadius)
+                .outerRadius(outerRadius);
+
+        var ribbon = d3.ribbon()
+                .radius(innerRadius);
+
+        var color = d3.scaleOrdinal()
+                .domain(d3.range(473))
+                .range([ "#c0097d","#30478c"]);
+
+
+        var g = svg_chord.append("g")
+                .attr("id", layer_id_this)
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+                .datum(chord(matrix));
+
+
+        var group = g.append("g")
+                .attr("class", "groups")
+                .selectAll("g")
+                .data(function(chords) { return chords.groups; })
+                .enter().append("g");
+
+
+        group.append("path")
+                .style("fill", function(d) { return color(d.index); })
+                .style("stroke", function(d) { return d3.rgb(color(d.index)).darker(); })
+                .attr("d", arc);
+
+        var groupTick = group.selectAll(".group-tick")
+                .data(function(d) { return groupTicks(d, 1e3); })
+                .enter().append("g")
+                .attr("class", "group-tick")
+                .attr("transform", function(d) { return "rotate(" + (d.angle * 180 / Math.PI - 90) + ") translate(" + outerRadius + ",0)"; });
+
+        groupTick.append("line")
+                .attr("x2", 3);
+
+        groupTick.filter(function(d) {
+            //console.log("d.value",d.value);
+            return d.value % 5e3 === 0;
+        })
+                .append("text")
+                .attr("x", 8)
+                .attr("dy", ".35em")
+                .attr("transform", function(d) { return d.angle > Math.PI ? "rotate(180) translate(-16)" : null; })
+                .style("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+                .text(function(d) { return formatValue(d.value); });
+
+        g.append("g")
+                .attr("class", "ribbons")
+                .selectAll("path")
+                .data(function(chords) { return chords; })
+                .enter().append("path")
+                .attr("d", ribbon)
+                .style("fill", function(d) { return color(d.target.index); })
+                .style("stroke", function(d) { return d3.rgb(color(d.target.index)).darker(); });
+
+
+        function groupTicks(d, step) {
+            var k = (d.endAngle - d.startAngle) / d.value;
+            return d3.range(0, d.value, step).map(function(value) {
+                return {value: value, angle: value * k + d.startAngle};
+            });
+        }
+
+
+
+        //++++++++++++++++
+        //++++++++++++++++
+        //++++++++++++++++
+
+        /*
+        var diameter = 600,
+                radius = diameter / 2,
+                innerRadius = radius - 120;
+
+        var cluster = d3.layout.cluster()
+                .size([360, innerRadius])
+                .sort(null)
+                .value(function (d) {
+                    return d.size;
+                });
+
+        var bundle = d3.layout.bundle();
+
+        var line = d3.svg.line.radial()
+                .interpolate("bundle")
+                .tension(.85)
+                .radius(function (d) {
+                    return d.y;
+                })
+                .angle(function (d) {
+                    return d.x / 180 * Math.PI;
+                });
+
+        svg_chord.attr("width", diameter)
+                .attr("height", diameter)
+                .attr("transform", "translate(" + 300 + "," + 300 + ")");
+
+        var link = svg_chord.append("g").selectAll(".link"),
+                node = svg_chord.append("g").selectAll(".node");
+
+        d3.json("data/readme-flare-imports.json", function (error, classes) {
+            if (error) throw error;
+
+            var nodes = cluster.nodes(packageHierarchy(classes)),
+                    links = packageImports(nodes);
+
+            link = link
+                    .data(bundle(links))
+                    .enter().append("path")
+                    .each(function (d) {
+                        d.source = d[0], d.target = d[d.length - 1];
+                    })
+                    .attr("class", "link")
+                    .attr("d", line);
+
+            node = node
+                    .data(nodes.filter(function (n) {
+                        return !n.children;
+                    }))
+                    .enter().append("text")
+                    .attr("class", "node")
+                    .attr("dy", ".31em")
+                    .attr("transform", function (d) {
+                        return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)");
+                    })
+                    .style("text-anchor", function (d) {
+                        return d.x < 180 ? "start" : "end";
+                    })
+                    .text(function (d) {
+                        return d.key;
+                    })
+                    .on("mouseover", mouseovered)
+                    .on("mouseout", mouseouted);
+        });
+
+        function mouseovered(d) {
+            node
+                    .each(function (n) {
+                        n.target = n.source = false;
+                    });
+
+            link
+                    .classed("link--target", function (l) {
+                        if (l.target === d) return l.source.source = true;
+                    })
+                    .classed("link--source", function (l) {
+                        if (l.source === d) return l.target.target = true;
+                    })
+                    .filter(function (l) {
+                        return l.target === d || l.source === d;
+                    })
+                    .each(function () {
+                        this.parentNode.appendChild(this);
+                    });
+
+            node
+                    .classed("node--target", function (n) {
+                        return n.target;
+                    })
+                    .classed("node--source", function (n) {
+                        return n.source;
+                    });
+        }
+
+        function mouseouted(d) {
+            link
+                    .classed("link--target", false)
+                    .classed("link--source", false);
+
+            node
+                    .classed("node--target", false)
+                    .classed("node--source", false);
+        }
+
+        d3.select(self.frameElement).style("height", diameter + "px");
+
+        // Lazily construct the package hierarchy from class names.
+        function packageHierarchy(classes) {
+            var map = {};
+
+            function find(name, data) {
+                var node = map[name], i;
+                if (!node) {
+                    node = map[name] = data || {name: name, children: []};
+                    if (name.length) {
+                        node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
+                        node.parent.children.push(node);
+                        node.key = name.substring(i + 1);
+                    }
+                }
+                return node;
+            }
+
+            classes.forEach(function (d) {
+                find(d.name, d);
+            });
+
+            return map[""];
+        }
+
+        // Return a list of imports for the given array of nodes.
+        function packageImports(nodes) {
+            var map = {},
+                    imports = [];
+
+            // Compute a map from name to node.
+            nodes.forEach(function (d) {
+                map[d.name] = d;
+            });
+
+            // For each import, construct a link from the source to target node.
+            nodes.forEach(function (d) {
+                if (d.imports) d.imports.forEach(function (i) {
+                    imports.push({source: map[d.name], target: map[i]});
+                });
+            });
+
+            return imports;
+        }
+
+*/
+
+    }
+
+
+    function drawSankeyChart( ){
+
+        d3.json("data/flowsforsankey.json", function (error, flowsankeys) {
+
+            //console.log("flowsankeys",flowsankeys);
+
+            var margin = { top: 1, right: 1, bottom: 6, left: 1 };
+            var width = 800 - margin.left - margin.right;
+            var height = 1000 - margin.top - margin.bottom;
+
+            var formatNumber = d3.format(",.0f");
+            var format = function(d) {
+                return formatNumber(d) + " TWh";
+            }
+            var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+            svg_sankey.attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            svg_sankey.selectAll('g').remove();
+
+            var sankey = d3.sankey()
+                    .nodeWidth(50)
+                    .nodePadding(1)
+                    .size([width, height]);
+
+            var path = sankey.link();
+
+            sankey.nodes(flowsankeys.nodes)
+                    .links(flowsankeys.links)
+                    .layout(32);
+
+            var link = svg_sankey.append("g").selectAll(".link")
+                    .data(flowsankeys.links)
+                    .enter().append("path")
+                    .attr("class", "link")
+                    .attr("d", path)
+                    .style("stroke-width", function(d) {
+                        return Math.max(1, d.dy);
+                    })
+                    .sort(function(a, b) {
+                        return b.dy - a.dy;
+                    });
+
+            link.append("title")
+                    .text(function(d) {
+                        return d.source.name + " → " + d.target.name + "\n" + format(d.value);
+                    });
+
+            var node = svg_sankey.append("g").selectAll(".node")
+                    .data(flowsankeys.nodes)
+                    .enter().append("g")
+                    .attr("class", "node")
+                    .attr("transform", function(d) {
+                        return "translate(" + d.x + "," + d.y + ")";
+                    })
+                    .call(d3.drag()
+                            .subject(function(d) {
+                                return d;
+                            })
+                            .on("start", function() {
+                                this.parentNode.appendChild(this);
+                            })
+                            .on("drag", dragmove));
+
+            node.append("rect")
+                    .attr("height", function(d) {
+                        return d.dy;
+                    })
+                    .attr("width", sankey.nodeWidth())
+                    .style("fill", function(d) {
+                        return d.color = color(d.name.replace( / */, ""));
+                    })
+                    .style("stroke", function(d) {
+                        return d3.rgb(d.color).darker(2);
+                    })
+                    .append("title")
+                    .text(function(d) {
+                        return d.name + "\n" + format(d.value);
+                    });
+
+            node.append("text")
+                    .attr("x", -6)
+                    .attr("y", function(d) {
+                        return d.dy / 2;
+                    })
+                    .attr("dy", ".35em")
+                    .attr("text-anchor", "end")
+                    .attr("transform", null)
+                    .text(function(d) {
+                        return d.name;
+                    })
+                    .filter(function(d) {
+                        return d.x < width / 2;
+                    })
+                    .attr("x", 6 + sankey.nodeWidth())
+                    .attr("text-anchor", "start");
+
+            function dragmove(d) {
+                d3.select(this).attr("transform", "translate(" + d.x + ","
+                        + (d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))) + ")");
+                sankey.relayout();
+                link.attr("d", path);
+            }
+
+
+        });
+
+
+
+    }
+
+    function initODmatirx(){
+
+        //console.log(ODmatrix);
+
+    }
+
+    function initTimebyYear(){
+        var map = d3.map();
+
+        for (var i = 2004; i < 2017; i ++)
+        {
+            var flightbyhour = initTimebyHour();
+            map.set(i.toString(), flightbyhour);
+            //flightfrequenceArr[i] = 0;
+        }
+        return map;
+    }
+
+    function initTimebyHour(){
+        var map = d3.map();
+
+        for (var i = 0; i < 24; i ++)
+        {
+            var arr = [];
+            map.set(i, arr);
+            //flightfrequenceArr[i] = 0;
+        }
+        return map;
+    }
+
+    function maximumOverAll(){
+        //console.log("max here",flightYearMap);
+        flightYearMap.each(function (d, i){
+            var temparrhere = [];
+            var maxhere;
+            d.each(function( dd, ii){
+                temparrhere.push(dd.length)
+            } );
+
+            setTimeout(function(){
+                maxhere = d3.max(temparrhere);
+                //console.log("maxhere",maxhere);
+                if(maxhere > max)
+                {
+                    max = maxhere;
+                }
+            }, 20);
+        });
+    }
+
+    function playAnimation( ){
+        /*
+         for(var i = 0; i < 24; i ++)
+         {
+         //console.log("g_flowsArr[i]",i,g_flowsArr[i]);
+         setTimeout(showthishour(i), 5000);
+         }
+         */
+    }
+
+    function prepareDataINHour(year, callback, callback1){
+
+        var maphour = flightYearMap.get(year);
+        //console.log("maphour", maphour);
+        maphour.each(function(d, i ){
+            frequencetemp[i] = d.length;
+        });
+        setTimeout(callback, 200);
+        setTimeout(callback1, 200);
+    }
+
+
+    // [Origin, Destination, year, day]
+    function readAirLinesbyTime(callback, callback1, callback2) {
+
+        //console.log(flightYearMap);
+
+        for(var year = 0; year < 13; year++){
+            var years = []
+            for(var j = 0; j < 437; j ++){
+                var destination = [];
+                for(var i =0; i < 437; i++){
+                    destination.push(0);
+                }
+                years.push(destination);
+            }
+            ODmatrix.push(years);
+        }
+
+
+        //console.log(ODmatrix);
+
+        d3.json("data/timeandflow.json", function (flights) {
+
+            var indexairport = 0;
+
+            flights.features.forEach(function (d) {
+                //console.log(d);
+
+                var flighttime = d.properties.deptime_1.substr(0,2);
+                var flighttime_int = parseInt(flighttime, 10);
+                var flight_year = d.properties.year;
+                var flight_year_int = parseInt(flight_year, 10) - 2004;
+
+
+                // [ index, long, lat, 2004, 2005.....]
+                //origin
+                if( airportcount.has(d.properties.origin)){
+
+                    var v = airportcount.get(d.properties.origin);
+                    v[flight_year_int + 3]++;
+                    airportcount.set( d.properties.origin,v );
+
+                }
+                else{
+                    var i_v = [indexairport, -1,-1,0,0,0,
+                                              0,0,0,0,0,
+                                             0,0,0,0,0];
+                    i_v[flight_year_int + 3]++;
+                    i_v[1] = d.geometry.coordinates[0][0];
+                    i_v[2] = d.geometry.coordinates[0][1];
+                    indexairport++;
+                    airportcount.set( d.properties.origin,i_v);
+                }
+
+                //hub
+                if( d.geometry.coordinates.length == 3 && airportcount.has(d.properties.hub)){
+
+                    var v = airportcount.get(d.properties.hub);
+                    v[flight_year_int + 3]++;
+                    airportcount.set( d.properties.hub,v );
+
+                }
+                else if(d.geometry.coordinates.length == 3){
+                    var i_v = [indexairport, -1,-1,0,0,0,
+                        0,0,0,0,0,
+                        0,0,0,0,0]
+
+                    if(d.geometry.coordinates.length == 3){
+                        i_v[1] = d.geometry.coordinates[1][0];
+                        i_v[2] = d.geometry.coordinates[1][1];
+                    }
+                    else{
+                        console.log("fuck it is wrong:",d );
+                    }
+
+                    i_v[flight_year_int + 3]++;
+                    indexairport++;
+                    airportcount.set( d.properties.hub,i_v);
+                }
+
+                //destination
+                if( airportcount.has(d.properties.destination)){
+
+                    var v = airportcount.get(d.properties.destination);
+                    v[flight_year_int + 3]++;
+                    airportcount.set( d.properties.destination,v );
+
+                }
+                else{
+                    var i_v = [indexairport, -1,-1,0,0,0,
+                        0,0,0,0,0,
+                        0,0,0,0,0];
+
+                    if(d.geometry.coordinates.length == 2){
+                        i_v[1] = d.geometry.coordinates[1][0];
+                        i_v[2] = d.geometry.coordinates[1][1];
+                    }
+                    if(d.geometry.coordinates.length == 3){
+                        i_v[1] = d.geometry.coordinates[2][0];
+                        i_v[2] = d.geometry.coordinates[2][1];
+                    }
+
+                    i_v[flight_year_int + 3]++;
+                    indexairport++;
+                    airportcount.set( d.properties.destination,i_v);
+                }
+
+
+                if( flightYearMap.has(flight_year)){
+
+                    var byhour = flightYearMap.get(flight_year);
+
+                    if( byhour.has(flighttime_int) )
+                    {
+                        //console.log("flighttime_int exsit");
+                        byhour.get(flighttime_int).push(d.geometry.coordinates);
+                        flightfrequenceArr[flighttime_int] ++ ;
+                    }
+                    else
+                    {
+                        console.log("error when flighttime is: ",flighttime_int);
+                    }
+
+                }
+
+            });
+
+
+            setTimeout(function(){
+                //console.log("airportcount",airportcount);
+                flights.features.forEach(function (d){
+
+                    var flighttime_str = d.properties.deptime_1.substr(0,2);
+                    var flight_hour = parseInt(flighttime_str, 10);
+                    var flight_year_str = d.properties.year;
+                    var flight_year = parseInt(flight_year_str, 10) - 2004;
+
+                    //console.log("flight_year_str",flight_year_str,"flight_year",flight_year);
+                    if(d.geometry.coordinates.length == 2){
+                        var origin = airportcount.get(d.properties.origin)[0];
+                        var destination = airportcount.get(d.properties.destination)[0];
+                        ODmatrix[flight_year][origin][destination]++;
+                    }
+
+                    if(d.geometry.coordinates.length == 3){
+
+                        var origin = airportcount.get(d.properties.origin)[0];
+                        var hub = airportcount.get(d.properties.hub)[0];
+                        var destination = airportcount.get(d.properties.destination)[0];
+                        ODmatrix[flight_year][origin][hub]++;
+                        ODmatrix[flight_year][hub][destination]++;
+
+                    }
+
+
+                });
+            }, 3000); //437
+        });
+
+        setTimeout(callback2, 200);
+        setTimeout(callback, 200);
+        setTimeout(callback1, 200);
+
+    }
+
+    function showthishour(i){
+
+        var flightArrthishour = timeTableMap.get(i);
+        //console.log("i", i);
+        clearOldLayer( drawNewLayer(flightArrthishour));
+
+        rect_id_this = "#rect" + i.toString();
+
+        svg_bar.selectAll(rect_id_this)
+                .style('fill', '#ff00ff');
+        svg_bar.selectAll(rect_id_last)
+                .style('fill', 'steelblue')
+
+        rect_id_last = rect_id_this;
+
+    }
+
+    function showThisYear(i){
+
+        //console.log(airportcount);
+        //console.log("OD", ODmatrix);
+
+        //var flightArrthishour = timeTableMap.get(i);
+        var flightArrthisyear = flightYearMap.get(i);
+
+        //console.log("flightArrthisyear", flightArrthisyear);
+        clearOldLayer( drawNewLayer(flightArrthisyear));
+
+        rect_id_this = "#rect" + i.toString();
+
+        svg_bar.selectAll(rect_id_this)
+                .style('fill', '#ff00ff');
+        svg_bar.selectAll(rect_id_last)
+                .style('fill', 'steelblue')
+
+        rect_id_last = rect_id_this;
+
+    }
+
+    function zoomed() {
+        g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        g.select(".state").style("stroke-width", 1 / d3.event.scale);
+        g.select(".flows").style("stroke-width", 1 / d3.event.scale);
+    }
+
+</script>
+
+</body>
+</html>
