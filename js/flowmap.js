@@ -1,10 +1,11 @@
 $(document).ready(function(){
 
-    $("#morris-area-chart").hide();
+    var width = $("#flow-map").width();
+    var height = $("#flow-map").height();
+    
+    console.log("width, height",width,height);
 
-    var flowmap =  $("#flowmap");
-
-    var map_width = 600, map_height = 600;
+    var map_width = width, map_height = 600;
 
     var projection = d3.geo.azimuthalEquidistant()
         .scale(150)
@@ -15,7 +16,7 @@ $(document).ready(function(){
     //Define path generator
     var path = d3.geo.path().projection(projection);
 
-    var svg = d3.select("#flowmap").append("svg")
+    var svg = d3.select("#flow-map").append("svg")
         .attr("width", map_width)
         .attr("height", map_height).append("g")
         .attr("transform", "rotate(0,180,180)")
@@ -26,16 +27,18 @@ $(document).ready(function(){
 
     drawBaseMap();
 
+
     function drawBaseMap() {
 
         d3.json("../data/world-110m.json", function (error, world) {
 
             g_basemap.append("path", ".circle")
                 .datum(topojson.object(world, world.objects.land))
-                .attr("class", "land")
+                .attr("class", "basemap")
                 .attr("d", path);
         });
 
     }
 
 });
+

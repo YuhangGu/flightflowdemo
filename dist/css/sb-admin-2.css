@@ -432,3 +432,9 @@ table.dataTable thead .sorting:after {
     border-left-width: 0;
   }
 }
+
+.basemap {
+  fill: #eee;
+  stroke: #444;
+  stroke-width: .5px;
+}
