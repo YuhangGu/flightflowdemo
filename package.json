@@ -1,6 +1,6 @@
 {
-  "name": "sb-admin-2",
-  "title": "SB Admin 2",
+  "name": "Yuhang Gu",
+  "title": "Movement Visualization",
   "version": "3.3.7+1",
   "homepage": "http://startbootstrap.com/template-overviews/sb-admin-2",
   "author": "Start Bootstrap",
@@ -19,6 +19,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/BlackrockDigital/startbootstrap-sb-admin-2.git"
+    "url": "git://yuhanggu.github.io/fightflowdemo/"
   }
 }

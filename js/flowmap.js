@@ -1,11 +1,9 @@
 $(document).ready(function(){
 
-    var width = $("#flow-map").width();
-    var height = $("#flow-map").height();
-    
-    console.log("width, height",width,height);
 
-    var map_width = width, map_height = 600;
+    var map_width = $("#flow-map").width();
+    var map_height = 600;
+
 
     var projection = d3.geo.azimuthalEquidistant()
         .scale(150)
