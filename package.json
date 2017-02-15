@@ -2,8 +2,8 @@
   "name": "Yuhang Gu",
   "title": "Movement Visualization",
   "version": "3.3.7+1",
-  "homepage": "http://startbootstrap.com/template-overviews/sb-admin-2",
-  "author": "Start Bootstrap",
+  "homepage": "http://gip.itc.nl/experimental/guy/flightflowdemoRelease/pages/index.html",
+  "author": "Yuhang Gu",
   "license": {
     "type": "MIT",
     "url": "https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE"
@@ -19,6 +19,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://yuhanggu.github.io/fightflowdemo/"
+    "url": "http://yuhanggu.github.io/fightflowdemo/"
   }
 }

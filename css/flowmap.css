@@ -1,0 +1,129 @@
+/*!
+ * Author: Yuhang
+ */
+
+.basemap {
+    fill: #eee;
+    stroke: #444;
+    stroke-width: .5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: all;
+}
+
+.basemap3D {
+    fill: none;
+    stroke: #444;
+    stroke-width: .5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: all;
+}
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}
+
+
+.flow_depature {
+    stroke: #46b39d;
+    fill : none;
+    stroke-width: .2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    opacity: 0.8;
+    pointer-events: all;
+}
+.flow_arrival {
+    stroke: #c3a130;
+    fill : none;
+    stroke-width: .2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    opacity: 0.8;
+    pointer-events: all;
+}
+
+.flow_depature_gone {
+    fill : none;
+    stroke-width: .2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    opacity: 0;
+    pointer-events: all;
+}
+
+.flow_arrival_gone {
+    fill : none;
+    stroke-width: .2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    opacity: 0;
+    pointer-events: all;
+}
+
+
+.bar_depature{
+    fill: #46b39d;
+}
+
+.bar_arrival{
+    fill: #c3a130;
+}
+
+.label{
+    fill: #8a8c8d;
+    stroke-width: .1px;
+    text-anchor: middle;
+    opacity: 0.65;
+}
+
+.label_legend{
+    stroke-width: .1px;
+    text-anchor: middle;
+    opacity: 0.65;
+}
+
+.label_temp{
+    fill: #000000;
+    stroke-width: .1px;
+    text-anchor: middle;
+    opacity: 0.65;
+}
+
+
+.group-tick line {
+    stroke: #000;
+}
+
+.ribbons {
+    fill-opacity: 0.67;
+}
+
+.map-div {
+    position: absolute;
+    background-color: rgba(4,99,128,.75);
+    width: 2800px;
+    height: 2400px;
+}
+
+.map_div_3D {
+    position: absolute;
+    background-color: rgba(0,0,0,.75);
+    opacity: 0.5;
+    border: 10px solid rgba(255,255,255,.75);
+    border-radius: 6px;
+    width: 800px;
+    height: 500px;
+}
+
+
+.map_container {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    right: 0px;
+}
+
+

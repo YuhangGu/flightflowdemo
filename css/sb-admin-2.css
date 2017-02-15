@@ -103,7 +103,7 @@ body {
   .sidebar {
     z-index: 1;
     position: absolute;
-    width: 250px;
+    width: 200px;
     margin-top: 51px;
   }
   .navbar-top-links .dropdown-messages,
@@ -437,4 +437,21 @@ table.dataTable thead .sorting:after {
   fill: #eee;
   stroke: #444;
   stroke-width: .5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  pointer-events: all;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.flow {
+  stroke: #ff688b;
+  stroke-width: .2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.8;
+  pointer-events: all;
 }
