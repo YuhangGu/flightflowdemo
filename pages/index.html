@@ -19,6 +19,7 @@
     <!-- Custom CSS -->
     <link href="../css/movementvis.css" rel="stylesheet">
     <link href="../css/flowmap.css" rel="stylesheet">
+    <link href="../css/migration.css" rel="stylesheet">
 
     <!-- Morris Charts CSS -->
     <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
@@ -79,6 +80,7 @@
                     </ul>
                     <!-- /.dropdown-messages -->
                 </li>
+
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
@@ -116,33 +118,25 @@
                             <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <li>
+                            <a href="flowmap.html"><i class="fa fa-bar-chart-o fa-fw"></i> Flow Map</a>
+                        </li>
+                        <li>
+                            <a href="migration.html"><i class="fa fa-table fa-fw"></i> Migration Vis</a>
+                        </li>
+                        <li>
+                            <a href="usertestform.html"><i class="fa fa-edit fa-fw"></i> User Test</a>
+                        </li>
+                        <!--li>
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Airport Vis<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="flot.html">2D Flow Map</a>
+                                    <a href="flowmap.html">2D Flow Map</a>
                                 </li>
                                 <li>
-                                    <a href="morris.html">3D Flow Map</a>
+                                    <a href="flowmap3D.html">3D Flow Map</a>
                                 </li>
                             </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-                        <li>
-                            <a href="tables.html"><i class="fa fa-table fa-fw"></i> Migration Vis<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="flot.html">2D </a>
-                                </li>
-                                <li>
-                                    <a href="morris.html">3D </a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li>
-                            <a href="forms.html"><i class="fa fa-edit fa-fw"></i> User Test</a>
-                        </li>
-
+                        </li-->
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -153,75 +147,129 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h3 class="page-header">Dashboard</h3>
+                    <h1 class="page-header">Dashboard ( go to Migration Vis Page, currently doesn't work)</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
 
             <div class="row">
-                <div class="col-lg-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Flow Map
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="flow-map-container">
-                                <div id="flow-map"></div>
-                            </div>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-8 -->
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <div class="row">
-
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Daily Flight (click the number to check)
+                        <div class="col-lg-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> Flow Map
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div id="flow-map-container">
+                                        <div id="flow-map"></div>
+                                    </div>
+                                </div>
+                                <!-- /.panel-body -->
                             </div>
-                            <div class="panel-body">
-                                <div id="bar-chart-iceland"></div>
-                            </div>
-                            <!-- /.panel-body -->
                         </div>
                     </div>
-
                     <div class="row">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Chord Chart
+                        <div class="col-lg-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> 3D Flow Map
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div id="flow-map-3D"></div>
+                                </div>
                             </div>
-                            <div class="panel-body">
-                                <div id="chord-chart-iceland"></div>
-                            </div>
-                            <!-- /.panel-body -->
                         </div>
                     </div>
-
-                </div>
-                <!-- /.col-lg-4 -->
-            </div>
-
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> 3D Flow Map
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> Daily Flight (click the number to check)
+                                </div>
+                                <div class="panel-body">
+                                    <div id="bar-chart-iceland"></div>
+                                </div>
+                                <!-- /.panel-body -->
+                            </div>
                         </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                                <div id="flow-map-3D"></div>
-                        </div>
-
-                        <!-- /.panel-body -->
                     </div>
-
-                    <!-- /.panel -->
+                    <div class="row">
+                       <div class="col-lg-12">
+                           <div class="panel panel-default">
+                               <div class="panel-heading">
+                                   <i class="fa fa-bar-chart-o fa-fw"></i> Chord Chart
+                               </div>
+                               <div class="panel-body">
+                                   <div id="chord-chart-iceland"></div>
+                               </div>
+                               <!-- /.panel-body -->
+                           </div>
+                       </div>
+                    </div>
                 </div>
-
+                <!-- /.col-lg-6 -->
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    Migration Flow Map
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div id="migration-flowmap"></div>
+                                </div>
+                                <!-- /.panel-body -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-12">
+                          <div class="panel panel-default">
+                              <div class="panel-heading">
+                                  3D Migration Flow Map
+                              </div>
+                              <!-- /.panel-heading -->
+                              <div class="panel-body">
+                                  <div id="migration-flowmap-3D"></div>
+                              </div>
+                              <!-- /.panel-body -->
+                          </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    Chord Chart of Migration
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div id="chord-chart-migration"></div>
+                                </div>
+                                <!-- /.panel-body -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    3D matrix
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div id="migration-3D-matrix"></div>
+                                </div>
+                                <!-- /.panel-body -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-6 -->
             </div>
             <!-- /.row -->
         </div>
@@ -229,6 +277,7 @@
 
     </div>
     <!-- /#wrapper -->
+
 
     <!-- D3 -->
     <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -257,6 +306,7 @@
     <script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/TrackballControls.js"></script>
     <script src="https://rawgit.com/mrdoob/three.js/master/examples/js/renderers/CSS3DRenderer.js"></script>
 
+
     <!-- Mapbox -->
     <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
@@ -274,12 +324,14 @@
     <!-- Morris Charts JavaScript -->
     <script src="../vendor/raphael/raphael.min.js"></script>
     <script src="../vendor/morrisjs/morris.min.js"></script>
-    <script src="../data/morris-data.js"></script>
 
     <!-- Custom Theme JavaScript -->
     <script src="../js/movementvis.js"></script>
     <script src="../js/flowmap.js"></script>
     <script src="../js/3Dflowmap.js"></script>
+    <script src="../js/migration.js"></script>
+    <script src="../js/3Dmigration.js"></script>
+    <script src="../js/3Dmigrationflowmap.js"></script>
 
 </body>
 

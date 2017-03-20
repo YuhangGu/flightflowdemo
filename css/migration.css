@@ -1,0 +1,81 @@
+.basemap{
+    fill: none;
+    stroke: #444;
+    stroke-width: .5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: all;
+    opacity: 0.7;
+}
+
+.flows2D{
+    fill: none;
+    /*stroke: #444;*/
+    stroke: #007CB5;
+    opacity: 0.45;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: all;
+}
+
+.label{
+    fill: #000000;
+    stroke-width: .1px;
+    text-anchor: middle;
+    opacity: 0.65;
+    pointer-events: all;
+}
+
+.chordlabel{
+    font-size : 12px;
+    fill: #000000;
+    stroke-width: .1px;
+    text-anchor: middle;
+    opacity: 0.65;
+    pointer-events: all;
+}
+
+.chordMuteRibbon{
+    /*fill : #898989;*/
+    opacity: 0.1;
+}
+
+.chordHighlightRibbon{
+    /*fill : #ffff00;*/
+    opacity: 0.95;
+}
+
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}
+
+.migration_map_div{
+    position: absolute;
+    width: 2800px;
+    height: 2400px;
+}
+
+/* for the 3D part*/
+.basemap3D{
+    fill: none;
+    stroke: #444;
+    stroke-width: .5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: all;
+}
+
+.basemaplabel3D{
+    font-size : 50px;
+    fill: rgba(8, 9, 11, 0.26);
+    stroke-width: .1px;
+    text-anchor: middle;
+    opacity: 0.45;
+    pointer-events: all;
+}
+
+.migration_map_div{
+    position: absolute;
+}

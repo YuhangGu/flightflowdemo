@@ -35,6 +35,7 @@
     opacity: 0.8;
     pointer-events: all;
 }
+
 .flow_arrival {
     stroke: #c3a130;
     fill : none;
@@ -117,7 +118,6 @@
     width: 800px;
     height: 500px;
 }
-
 
 .map_container {
     position: absolute;

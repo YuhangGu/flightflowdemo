@@ -18,5 +18,6 @@
     <orderEntry type="library" name="d3-selection-multi-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="d3kit-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="d3-scale-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="flightflowdemo node_modules" level="project" />
   </component>
 </module>
