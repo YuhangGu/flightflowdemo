@@ -17,7 +17,8 @@ var Vis = {
     //2D graphic
     mapWidth: 2800,
     mapHeight: 2400,
-    mapZ: 2400,
+    mapZ: 800,
+    //mapZ: 2400,
 
     // base map
     theMap : null,
@@ -36,6 +37,8 @@ var Vis = {
     // <option value="3">tempreature</option>
     // <option value="4">troops</option>
     datasetArr : [],
+    //datascaleArr : [],
+
     datascaleArr : null,
     //data component
     /*
@@ -63,7 +66,17 @@ var Vis = {
         "mapbox.pirates",
         "mapbox.emerald",
         "mapbox.high-contrast"
-    ]
+    ],
+
+    maxListtime : [],
+    minListtime :  [],
+    maxListheight :  [],
+    minListheight :  [],
+    maxListA1 :  [],
+    minListA1 :  [],
+    maxListA2 :  [],
+    minListA2 :  []
+
 }
 
 function designInit() {
@@ -78,6 +91,14 @@ function designInit() {
 
 function initHTML() {
 
+    Vis.datascaleArr = [
+        [1,1], //none
+        [d3.min(Vis.minListtime), d3.max(Vis.maxListtime)], // time
+        [d3.min(Vis.minListheight), d3.max(Vis.maxListheight)], // height
+        [d3.min(Vis.minListA1), d3.max(Vis.maxListA1)], //speed
+        [d3.min(Vis.minListA2), d3.max(Vis.maxListA2)] //speed
+    ];
+    
     updateVis();
 
     $("#selector3D").change(function (e) {
@@ -118,47 +139,19 @@ function updateVis() {
 
 function dataProcessing(callback) {
 
-    var maxListtime = [];
-    var minListtime = [];
-    var maxListheight = [];
-    var minListheight = [];
-    var maxListA1 = [];
-    var minListA1 = [];
-    var maxListA2 = [];
-    var minListA2 = [];
-
     d3.json("data/allflights.json", function(error, data){
 
-        //console.log(data);
-
-
-
-        data.forEach(function(item){
-
+        data.forEach( function(item){
             var pointList = [];
-
-
             var timeList  = item.time;
             var heightList = item.altitude;
             var attr1List = item.speed;
             var attr2List = item.speed;
 
-
             for(var i = 0; i < item.geometry.length; i ++){
                 var point = projectionWorldtoVis(item.geometry[i]);
                 pointList.push([ point[0], point[1] ]);
             }
-
-
-            maxListtime.push(d3.max(timeList));
-            minListtime.push(d3.min(timeList));
-            maxListheight.push(d3.max(heightList));
-            minListheight.push(d3.min(heightList));
-            maxListA1.push(d3.max(attr1List));
-            minListA1.push(d3.min(attr1List));
-            maxListA2.push(d3.max(attr2List));
-            minListA2.push(d3.min(attr2List));
-
 
             var dataItem = [
                 pointList,
@@ -170,30 +163,28 @@ function dataProcessing(callback) {
 
             Vis.datasetArr.push(dataItem);
 
+            Vis.maxListtime.push(d3.max(timeList));
+            Vis.minListtime.push(d3.min(timeList));
+
+            Vis.maxListheight.push(d3.max(heightList));
+            Vis.minListheight.push(d3.min(heightList));
+
+            Vis.maxListA1.push(d3.max(attr1List));
+            Vis.minListA1.push(d3.min(attr1List));
+
+            Vis.maxListA2.push(d3.max(attr2List));
+            Vis.minListA2.push(d3.min(attr2List));
         });
-
-        console.log("Vis.datasetArr",Vis.datasetArr);
-
-        Vis.datascaleArr = [
-            [1,1], //none
-            [d3.min(minListtime), d3.max(maxListtime)], // time
-            [d3.min(minListheight), d3.max(maxListheight)], // height
-            [d3.min(minListA1), d3.max(maxListA1)], //tempreature
-            [d3.min(minListA2), d3.max(maxListA2)] //troops
-        ];
-
 
     });
 
     function projectionWorldtoVis(point) {
-
         var pointPlane = Vis.theMap.project( L.latLng(point[0], point[1] ));
-
         return [pointPlane.x - Vis.plane_origin.x - Vis.mapWidth/2,
             2 * Vis.plane_center.y - pointPlane.y - Vis.plane_origin.y - Vis.mapHeight/2];
     }
 
-    function projectionWorldtoVis_forMinard(point) {
+    function projectionWorldtoVis_forMinard (point) {
         var pointPlane = Vis.theMap.project( L.latLng(point.Latitude, point.Longitude ));
 
         return [pointPlane.x - Vis.plane_origin.x - Vis.mapWidth/2,
@@ -380,6 +371,7 @@ function initGeo(){
     }
 
     function creatTheAixs(){
+
         var material = new THREE.LineBasicMaterial({ color: "#08090b" });
         var geometry = new THREE.Geometry();
         geometry.vertices.push(
@@ -407,12 +399,14 @@ function update() {
 // X_Y, Z, Color, Volume
 function flow3DBuilder(  ){
 
+
+
+    //console.log(Vis.minListtime);
+
     var thirdIndex = Vis.visualVarablesArr[0];
     var colorIndex = Vis.visualVarablesArr[1];
     var volumeIndex = Vis.visualVarablesArr[2];
 
-
-    var geometry, material, mesh;
 
     var thridDlinear = d3.scale.linear().domain(  Vis.datascaleArr[thirdIndex] )
         .range([ 0, Vis.mapZ]);
@@ -425,61 +419,33 @@ function flow3DBuilder(  ){
         .range([0, 80]);
 
 
+    var colorOrdinal = d3.scaleOrdinal(["#fe8173", "#beb9d9", "#b1df71", "#fecde5", "#ffffb8", "#feb567", "#8ad4c8", "#7fb0d2",
+        "#fe8173", "#beb9d9", "#b1df71", "#fecde5", "#ffffb8", "#feb567", "#8ad4c8", "#7fb0d2",
+        "#fe8173", "#beb9d9", "#b1df71", "#fecde5", "#ffffb8", "#feb567", "#8ad4c8", "#7fb0d2",
+        "#fe8173", "#beb9d9", "#b1df71"])
+        .domain(Vis.datasetArr);
+
 
     //create objects for every of these three troops
     Vis.datasetArr.forEach( function (dataItem, i) {
 
-        //console.log("dataItem", dataItem);
-
-        var segments = new THREE.Object3D();
-
         var vertices = dataItem[0];
+
         var heightArray = dataItem[thirdIndex];
         var colorArray =  dataItem[colorIndex];
         var volumeArray =  dataItem[volumeIndex];
 
+        var geometry = new THREE.Geometry();
 
-        if( volumeIndex==0 ){
-
-            for (var i = 1, len = vertices.length - 1; i < len; i++) {
-
-                var path = new THREE.CatmullRomCurve3([ new THREE.Vector3(vertices[i-1][0], vertices[i-1][1], thridDlinear(heightArray[i-1]) ),
-                    new THREE.Vector3(vertices[ i ][0], vertices[ i ][1], thridDlinear(heightArray[ i ] )),
-                    new THREE.Vector3(vertices[i+1][0], vertices[i+1][1], thridDlinear(heightArray[i+1])  ) ]);
-
-
-                var color = colorlinear(colorArray[i]);
-                geometry = new THREE.TubeGeometry(path, 4, 40, 16);
-                material = new THREE.MeshLambertMaterial({ opacity: 1, transparent: true,
-                    color: color });
-
-                mesh = new THREE.Mesh(geometry, material);
-                segments.add(mesh);
-            }
-
-        }
-        else{
-            for (var i = 1, len = vertices.length - 1; i < len; i++) {
-
-                var path = new THREE.CatmullRomCurve3([ new THREE.Vector3(vertices[i-1][0], vertices[i-1][1], thridDlinear(heightArray[i-1]) ),
-                    new THREE.Vector3(vertices[ i ][0], vertices[ i ][1], thridDlinear(heightArray[ i ] )),
-                    new THREE.Vector3(vertices[i+1][0], vertices[i+1][1], thridDlinear(heightArray[i+1])  ) ]);
-
-                var color = colorlinear(colorArray[i]);
-                geometry = new THREE.TubeGeometry(path, 4, volumescale(volumeArray[i]), 16);
-                material = new THREE.MeshLambertMaterial({ opacity: 1, transparent: true,
-                    color: color });
-
-                mesh = new THREE.Mesh(geometry, material);
-                segments.add(mesh);
-            }
+        for(var i = 0; i < dataItem[0].length; i ++){
+            geometry.vertices.push(new THREE.Vector3(vertices[i][0],  vertices[i][1],  thridDlinear(heightArray[ i ])));
         }
 
-        segments.castShadow = true;
-        segments.receiveShadow = true;
 
-        segments.name = "flows3D"
-        Vis.glScene.add(segments);
+        var material = new THREE.LineBasicMaterial({ color: colorOrdinal(dataItem), linewidth: 5 } );
+        var line = new THREE.Line(geometry, material);
+        line.name = "flows3D"
+        Vis.glScene.add(line);
     });
 
     //return segments;
