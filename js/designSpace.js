@@ -98,7 +98,7 @@ function initHTML() {
         [d3.min(Vis.minListA1), d3.max(Vis.maxListA1)], //speed
         [d3.min(Vis.minListA2), d3.max(Vis.maxListA2)] //speed
     ];
-    
+
     updateVis();
 
     $("#selector3D").change(function (e) {
@@ -399,8 +399,6 @@ function update() {
 // X_Y, Z, Color, Volume
 function flow3DBuilder(  ){
 
-
-
     //console.log(Vis.minListtime);
 
     var thirdIndex = Vis.visualVarablesArr[0];
@@ -408,15 +406,12 @@ function flow3DBuilder(  ){
     var volumeIndex = Vis.visualVarablesArr[2];
 
 
-    var thridDlinear = d3.scale.linear().domain(  Vis.datascaleArr[thirdIndex] )
-        .range([ 0, Vis.mapZ]);
+    var thridDlinear = d3.scaleLinear().range([ 0, Vis.mapZ]).domain(  Vis.datascaleArr[thirdIndex] );
 
-    var colorlinear = d3.scale.linear().domain( Vis.datascaleArr[colorIndex] )
-        .range([ "blue","red"]);
+    var colorlinear = d3.scaleLinear().domain( Vis.datascaleArr[colorIndex] ).range([ "blue","red"]);
 
-    //Vis.trooplinear = d3.scale.linear().domain(volumescale).range([2, 20]);
-    var volumescale = d3.scale.linear().domain( Vis.datascaleArr[volumeIndex])
-        .range([0, 80]);
+    //Vis.trooplinear = d3.scaleLinear().domain(volumescale).range([2, 20]);
+    var volumescale = d3.scaleLinear().domain( Vis.datascaleArr[volumeIndex]) .range([0, 80]);
 
 
     var colorOrdinal = d3.scaleOrdinal(["#fe8173", "#beb9d9", "#b1df71", "#fecde5", "#ffffb8", "#feb567", "#8ad4c8", "#7fb0d2",
