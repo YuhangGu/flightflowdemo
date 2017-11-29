@@ -5,14 +5,14 @@
     stroke-linejoin: round;
     stroke-linecap: round;
     pointer-events: all;
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 .flows2D{
     fill: none;
     /*stroke: #444;*/
-    stroke: #007CB5;
-    opacity: 0.45;
+    stroke: #ff3a9e;
+    opacity: 0.7;
     stroke-linejoin: round;
     stroke-linecap: round;
     pointer-events: all;
@@ -20,10 +20,11 @@
 
 .label{
     fill: #000000;
-    stroke-width: .1px;
+    stroke-width: 0.1px;
     text-anchor: middle;
-    opacity: 0.65;
+    opacity: 0.8;
     pointer-events: all;
+    text-shadow:  none;
 }
 
 .chordlabel{
@@ -60,6 +61,7 @@
 /* for the 3D part*/
 .basemap3D{
     fill: none;
+    opacity: 0.8;
     stroke: #444;
     stroke-width: .5px;
     stroke-linejoin: round;
