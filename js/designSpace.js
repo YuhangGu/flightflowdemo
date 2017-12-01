@@ -75,7 +75,11 @@ var Vis = {
     maxListA1 :  [],
     minListA1 :  [],
     maxListA2 :  [],
-    minListA2 :  []
+    minListA2 :  [],
+
+
+    //object test
+    testmesh :null
 
 }
 
@@ -133,9 +137,9 @@ function updateVis() {
     }
 
     flow3DBuilder( );
+
     update();
 }
-
 
 function dataProcessing(callback) {
 
@@ -302,8 +306,6 @@ function init3DScene(callback) {
     Vis.controls.rotateSpeed = 2;
     Vis.controls.minDistance = 30;
     Vis.controls.maxDistance = 8000;
-
-    update();
 
     function createGlRenderer() {
         var glRenderer = new THREE.WebGLRenderer({alpha: true});
