@@ -79,8 +79,27 @@ var Vis = {
 
 
     //object test
-    testmesh :null
+    testmesh :null,
 
+    dataAirportNames : null,
+    dataAirports: null,
+    dataLocalFlights: null,
+    airPortCodeList : [
+        "AEY",
+        "BIU",
+        "EGS",
+        "GJR",
+        "GRY",
+        "HFN",
+        "HZK",
+        "IFJ",
+        "KEF",
+        "RKV",
+        "SAK",
+        "THO",
+        "VEY",
+        "VPN"
+    ]
 }
 
 function designInit() {
@@ -88,7 +107,6 @@ function designInit() {
     init3DScene(function () {
         initGeo ( );
         dataProcessing( function () {
-            //arregateByMonth();
             initHTML();
         });
     });
@@ -96,109 +114,190 @@ function designInit() {
 
 function initHTML() {
 
-    Vis.datascaleArr = [
-        [1,1], //none
-        [d3.min(Vis.minListtime), d3.max(Vis.maxListtime)], // time
-        [d3.min(Vis.minListheight), d3.max(Vis.maxListheight)], // height
-        [d3.min(Vis.minListA1), d3.max(Vis.maxListA1)], //speed
-        [d3.min(Vis.minListA2), d3.max(Vis.maxListA2)] //speed
-    ];
 
-    updateVis();
+    updateVis(7);
 
     $("#selector3D").change(function (e) {
+
+
         Vis.visualVarablesArr[0] = $("#selector3D option:selected").val();
-        updateVis();
-    });
 
-    $("#selectorColor").change(function (e) {
-        Vis.visualVarablesArr[1] = $("#selectorColor option:selected").val();
-        updateVis();
-    });
+        var selectedType =  $("#selector3D option:selected").val();
+        //console.log('selectedType', selectedType);
+        updateVis(selectedType);
 
-    $("#selectorLinewidth").change(function (e) {
-        Vis.visualVarablesArr[2] = $("#selectorLinewidth option:selected").val();
-        updateVis();
-    });
-
-    $("#mapstyle").change(function (e) {
-        var styleIndex = $("#mapstyle option:selected").val();
-
-        console.log("styleIndex", styleIndex);
     });
 
 }
 
-function updateVis() {
+function updateVis(date) {
 
-    // clear the old object first
     while(Vis.glScene.getObjectByName("flows3D")){
         var selectedObject = Vis.glScene.getObjectByName("flows3D");
         Vis.glScene.remove( selectedObject );
     }
 
-    flow3DBuilder( );
+    flowmap3DTime(date);
+    //flow3DBuilder( );
 
     update();
 }
 
-function dataProcessing(callback) {
+function flowmap3DTime(date){
 
-    d3.json("data/icelandlocal.json", function(error, data){
 
-        data.forEach( function(d){
+    var companys =["airiceland", "eagleair",  "norlandair"];
+    var colorOrdinal = d3.scaleOrdinal(["#3fd464",
+        "#ffd60d",
+        "#0983ba" ]).domain(companys);
 
-            var pointList   = [];
-            var timeList    = [];
-            var heightList = [];
-            var attr1List = []; // Monday Tuseday Wendesday
-            var attr2List = [];
+    var height = 24*60;
+
+    aixs(height);
+
+
+    Vis.dataAirports.forEach(function (d,i) {
+
+
+        var point = projectionWorldtoVis(  [ parseFloat( d[0] )  ,  parseFloat( d[1]) ]);
+        var geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3( point[0],  point[1],  0 ));
+        geometry.vertices.push(new THREE.Vector3( point[0],  point[1],  height ));
+        var material = new THREE.LineBasicMaterial({  linewidth: 1 } );
+        var line = new THREE.Line(geometry, material);
+        line.name = "flows3D"
+        Vis.glScene.add(line);
+
+
+        //text, x, y, z, size, color, backGroundColor, backgroundMargin
+
+        var str = Vis.airPortCodeList[i]
+        var textmesh = createLabel(str, point[0] , point[1], 2, 40, "black", "yellow");
+        Vis.glScene.add(textmesh);
+
+        //var textmesh2 = createLabel("X", point[0] , point[1], height, 40, "black", "yellow");
+        //Vis.glScene.add(textmesh2);
+    });
+
+
+    if(date == 7 ){
+
+        Vis.dataLocalFlights.forEach(function (d) {
 
             var pointO = projectionWorldtoVis([d.originloglat[1], d.originloglat[0]]);
             var pointD = projectionWorldtoVis([d.destloglat[1], d.destloglat[0]]);
 
-
             var timeArr1 = d.departure.split(":");
             var timeO = parseInt(timeArr1[0])*60 + parseInt(timeArr1[1]);
-            pointList.push(pointO);
-            timeList.push(timeO);
-            heightList.push(d.originAlt);
 
             var timeArr2 = d.arrival.split(":");
             var timeD = parseInt(timeArr2[0])*60 + parseInt(timeArr2[1]);
-            pointList.push(pointD);
-            timeList.push(timeD);
-            heightList.push(d.destAlt);
 
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3( pointO[0],  pointO[1],  timeO ));
+            geometry.vertices.push(new THREE.Vector3( pointD[0],  pointD[1],  timeD ));
 
-            attr1List.push(d.dateweek);
-
-            var dataItem = [
-                pointList,
-                timeList,
-                heightList,
-                attr1List, //date in week
-                attr2List
-            ];
-
-            Vis.datasetArr.push(dataItem);
-
-            Vis.maxListtime.push(d3.max(timeList));
-            Vis.minListtime.push(d3.min(timeList));
-
-            Vis.maxListheight.push(d3.max(heightList));
-            Vis.minListheight.push(d3.min(heightList));
-
-            Vis.maxListA1.push(d3.max(attr1List));
-            Vis.minListA1.push(d3.min(attr1List));
-
-            Vis.maxListA2.push(d3.max(attr2List));
-            Vis.minListA2.push(d3.min(attr2List));
+            var material = new THREE.LineBasicMaterial({ color: colorOrdinal(  d.companyname ),linewidth: 2 } );
+            var line = new THREE.Line(geometry, material);
+            line.name = "flows3D"
+            Vis.glScene.add(line);
 
         });
 
+    }
+    else{
 
-    });
+
+        Vis.dataLocalFlights.forEach(function (d) {
+
+            if(d.dateweek[date]){
+
+                console.log(d.dateweek[date]);
+
+                var pointO = projectionWorldtoVis([d.originloglat[1], d.originloglat[0]]);
+                var pointD = projectionWorldtoVis([d.destloglat[1], d.destloglat[0]]);
+
+                var timeArr1 = d.departure.split(":");
+                var timeO = parseInt(timeArr1[0])*60 + parseInt(timeArr1[1]);
+
+                var timeArr2 = d.arrival.split(":");
+                var timeD = parseInt(timeArr2[0])*60 + parseInt(timeArr2[1]);
+
+
+                var geometry = new THREE.Geometry();
+
+                geometry.vertices.push(new THREE.Vector3( pointO[0],  pointO[1],  timeO ));
+                geometry.vertices.push(new THREE.Vector3( pointD[0],  pointD[1],  timeD ));
+
+                var material = new THREE.LineBasicMaterial({ color: colorOrdinal(  d.companyname ),linewidth: 2 } );
+                var line = new THREE.Line(geometry, material);
+                line.name = "flows3D"
+                Vis.glScene.add(line);
+            }
+
+        });
+
+    }
+
+
+
+    function aixs(height) {
+        var material = new THREE.LineBasicMaterial({ color: "#165686" });
+        var geometry = new THREE.Geometry();
+        geometry.vertices.push(
+            new THREE.Vector3( -Vis.mapWidth/2,  Vis.mapHeight/2, height),
+            new THREE.Vector3( -Vis.mapWidth/2,  Vis.mapHeight/2, 0),
+            new THREE.Vector3(  Vis.mapWidth/2,  Vis.mapHeight/2, 0),
+            new THREE.Vector3(  Vis.mapWidth/2,  Vis.mapHeight/2, height),
+            new THREE.Vector3( -Vis.mapWidth/2,  Vis.mapHeight/2, height),
+            new THREE.Vector3( -Vis.mapWidth/2, -Vis.mapHeight/2, height),
+            new THREE.Vector3( -Vis.mapWidth/2, -Vis.mapHeight/2, 0)
+        );
+
+        var line = new THREE.Line( geometry, material );
+        Vis.glScene.add( line );
+    }
+
+
+    function createLabel(text, x, y, z, size, color, backGroundColor, backgroundMargin) {
+
+
+        if(!backgroundMargin)
+            backgroundMargin = 50;
+        var canvas = document.createElement("canvas");
+        var context = canvas.getContext("2d");
+        context.font = size + "pt Arial";
+        var textWidth = context.measureText(text).width;
+        canvas.width = textWidth + backgroundMargin;
+        canvas.height = size + backgroundMargin;
+        context = canvas.getContext("2d");
+        context.font = size + "pt Arial";
+        if(backGroundColor) {
+            context.fillStyle = backGroundColor;
+            context.fillRect(canvas.width / 2 - textWidth / 2 - backgroundMargin / 2, canvas.height / 2 - size / 2 - +backgroundMargin / 2, textWidth + backgroundMargin, size + backgroundMargin);
+        }
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillStyle = color;
+        context.fillText(text, canvas.width / 2, canvas.height / 2);
+        // context.strokeStyle = "black";
+        // context.strokeRect(0, 0, canvas.width, canvas.height);
+        var texture = new THREE.Texture(canvas);
+        texture.needsUpdate = true;
+        var material = new THREE.MeshBasicMaterial({
+            map : texture
+        });
+        var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width, canvas.height), material);
+        // mesh.overdraw = true;
+        mesh.doubleSided = true;
+        //mesh.position.x = x - canvas.width;
+        //mesh.position.y = y - canvas.height;
+
+        mesh.position.x = x;
+        mesh.position.y = y ;
+        mesh.position.z = z;
+        return mesh;
+    }
 
     function projectionWorldtoVis(point) {
 
@@ -207,93 +306,18 @@ function dataProcessing(callback) {
             2 * Vis.plane_center.y - pointPlane.y - Vis.plane_origin.y - Vis.mapHeight/2];
     }
 
-    function projectionWorldtoVis_forMinard (point) {
-        var pointPlane = Vis.theMap.project( L.latLng(point.Latitude, point.Longitude ));
-
-        return [pointPlane.x - Vis.plane_origin.x - Vis.mapWidth/2,
-            2 * Vis.plane_center.y - pointPlane.y - Vis.plane_origin.y - Vis.mapHeight/2];
-    }
-
-    setTimeout(callback, 200);
-}
-
-function arregateByMonth(){
-
-    //console.log(Vis.datasetArr);
 }
 
 
-function dataProcessing_with_Minard_Data(callback) {
+function dataProcessing(callback) {
 
-    d3.json("data/minardData.json", function(error, data){
+    d3.json("data/icelandlocal.json", function(error, data){
 
-        var maxListtime = [];
-        var minListtime = [];
-        var maxListA1 = [];
-        var minListA1 = [];
-        var maxListA2 = [];
-        var minListA2 = [];
-
-        data.features.forEach(function(item){
-
-            var pointList = [];
-            var timeList = [];
-            var attr1List = [];
-            var attr2List = [];
-
-            //fake data for the spatial Z
-            var heightList = [];
-
-            item.attribute.forEach(function (d) {
-
-                var point = projectionWorldtoVis(d);
-
-                pointList.push([ point[0], point[1] ]);
-                timeList.push(parseInt(d.Day));
-                attr1List.push(parseInt(d.Temperature));
-                attr2List.push(parseInt(d.Troops));
-                heightList.push(100);
-
-            });
-
-
-            maxListtime.push(d3.max(timeList));
-            minListtime.push(d3.min(timeList));
-            maxListA1.push(d3.max(attr1List));
-            minListA1.push(d3.min(attr1List));
-            maxListA2.push(d3.max(attr2List));
-            minListA2.push(d3.min(attr2List));
-
-
-            var dataItem = [  pointList,
-                timeList,
-                heightList,
-                attr1List,
-                attr2List
-            ];
-
-            Vis.datasetArr.push(dataItem);
-
-        });
-
-
-        Vis.datascaleArr = [
-            [1,1], //none
-            [d3.min(minListtime), d3.max(maxListtime)], // time
-            [0,200], // height
-            [d3.min(minListA1), d3.max(maxListA1)], //tempreature
-            [d3.min(minListA2), d3.max(maxListA2)] //troops
-        ];
-
+        Vis.dataAirportNames = data.airportsDictionary;
+        Vis.dataAirports = data.airportsGeo;
+        Vis.dataLocalFlights = data.flights;
 
     });
-
-    function projectionWorldtoVis(point) {
-        var pointPlane = Vis.theMap.project( L.latLng(point.Latitude, point.Longitude ));
-
-        return [pointPlane.x - Vis.plane_origin.x - Vis.mapWidth/2,
-            2 * Vis.plane_center.y - pointPlane.y - Vis.plane_origin.y - Vis.mapHeight/2];
-    }
 
     setTimeout(callback, 200);
 }
@@ -356,7 +380,7 @@ function init3DScene(callback) {
 function initGeo(){
 
     createMap();
-    creatTheAixs();
+    //creatTheAixs();
 
     function createMap() {
 
@@ -373,7 +397,6 @@ function initGeo(){
         mesh.position.z = 0;
         mesh.receiveShadow	= true;
         Vis.glScene.add(mesh);
-
 
         d3.selectAll('.map-div')
             .data([1]).enter()
@@ -414,6 +437,8 @@ function initGeo(){
         var line = new THREE.Line( geometry, material );
         Vis.glScene.add( line );
     }
+
+
 }
 
 function update() {
@@ -421,97 +446,4 @@ function update() {
     Vis.glRenderer.render(Vis.glScene, Vis.camera);
     Vis.cssRenderer.render(Vis.cssScene, Vis.camera);
     requestAnimationFrame(update);
-}
-
-// X_Y, Z, Color, Volume
-function flow3DBuilder(  ){
-
-    //console.log(Vis.minListtime);
-
-    var thirdIndex = Vis.visualVarablesArr[0];
-    var colorIndex = Vis.visualVarablesArr[1];
-    var volumeIndex = Vis.visualVarablesArr[2];
-
-
-    var thridDlinear = d3.scaleLinear().range([ 0, Vis.mapZ]).domain(  Vis.datascaleArr[thirdIndex] );
-
-    var colorlinear = d3.scaleLinear().domain( Vis.datascaleArr[colorIndex] ).range([ "blue","red"]);
-
-    //Vis.trooplinear = d3.scaleLinear().domain(volumescale).range([2, 20]);
-    var volumescale = d3.scaleLinear().domain( Vis.datascaleArr[volumeIndex]) .range([0, 80]);
-
-
-    var colorOrdinal = d3.scaleOrdinal(["#fe8173", "#beb9d9", "#b1df71", "#fecde5", "#ffffb8", "#feb567", "#8ad4c8", "#7fb0d2",
-        "#fe8173", "#beb9d9", "#b1df71", "#fecde5", "#ffffb8", "#feb567", "#8ad4c8", "#7fb0d2",
-        "#fe8173", "#beb9d9", "#b1df71", "#fecde5", "#ffffb8", "#feb567", "#8ad4c8", "#7fb0d2",
-        "#fe8173", "#beb9d9", "#b1df71"])
-        .domain(Vis.datasetArr);
-
-
-    //create objects for every of these three troops
-    Vis.datasetArr.forEach( function (dataItem, i) {
-
-        var vertices = dataItem[0];
-
-        var heightArray = dataItem[thirdIndex];
-        var colorArray =  dataItem[colorIndex];
-        var volumeArray =  dataItem[volumeIndex];
-
-        var geometry = new THREE.Geometry();
-
-        for(var i = 0; i < dataItem[0].length; i ++){
-            geometry.vertices.push(new THREE.Vector3(vertices[i][0],  vertices[i][1],  thridDlinear(heightArray[ i ])));
-        }
-
-
-        var material = new THREE.LineBasicMaterial({ color: colorOrdinal(dataItem), linewidth: 5 } );
-        var line = new THREE.Line(geometry, material);
-        line.name = "flows3D"
-        Vis.glScene.add(line);
-    });
-
-    //return segments;
-}
-
-function flow3DBuilder_old(vertices, heightArray, heightScale,
-                        colorArray, colorscale,  volumeArray, volumescale){
-
-    //console.log("heightScale", heightScale,"colorscale",colorscale,"volumescale",volumescale);
-
-    var geometry, material, mesh;
-
-    var thridDlinear = d3.scale.linear().domain( heightScale )
-        .range([ 0, Vis.mapZ]);
-
-    var colorlinear = d3.scale.linear().domain( colorscale )
-        .range([ "blue","red"]);
-
-
-    //Vis.trooplinear = d3.scale.linear().domain(volumescale).range([2, 20]);
-    var volumescale = d3.scale.linear().domain( volumescale)
-        .range([0, 80]);
-
-    var segments = new THREE.Object3D();
-
-    for (var i = 1, len = vertices.length - 1; i < len; i++) {
-
-        var path = new THREE.CatmullRomCurve3([ new THREE.Vector3(vertices[i-1][0], vertices[i-1][1], thridDlinear(heightArray[i-1]) ),
-            new THREE.Vector3(vertices[ i ][0], vertices[ i ][1], thridDlinear(heightArray[ i ] )),
-            new THREE.Vector3(vertices[i+1][0], vertices[i+1][1], thridDlinear(heightArray[i+1])  ) ]);
-
-
-        var color = colorlinear(colorArray[i]);
-
-        geometry = new THREE.TubeGeometry(path, 4, volumescale(volumeArray[i]), 16);
-        material = new THREE.MeshLambertMaterial({ opacity: 1, transparent: true,
-            color: color });
-
-        mesh = new THREE.Mesh(geometry, material)
-        segments.add(mesh);
-    }
-
-    segments.castShadow = true;
-    segments.receiveShadow = true;
-
-    return segments;
 }
