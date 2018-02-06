@@ -34,28 +34,40 @@
 </head>
 
 <body onload="designInit()">
-<h1>3D Flow Map Designs</h1>
+<h1>Iceland local flight along a week</h1>
+<div class="row" id="contentrowfor3D">
+    <div id="visDiv"></div>
+    <div id="legend">
+        <label> company name</label>
+        <br><br>
+        <label> airiceland </label>
+        <br>eagleair<br>
+        <label>norlandair</label>
+        <svg id="legendRect" width="30" height="30" viewBox="0 0 120 120">
+            <rect x="70%" y="35%" width="15%" height="15%" style="fill:rgb(63,212,100)"/>
+            <rect x="70%" y="53%" width="15%" height="15%" style="fill:rgb(255,214,13)"/>
+            <rect x="70%" y="71%" width="15%" height="15%" style="fill:rgb(9,131,186)"/>
+        </svg>
+    </div>
+</div>
 
-
-<div class= "site-wrapper">
+<div class="site-wrapper">
     <div class="site-wrapper-inner">
         <div class="cover-container">
             <div id="visvariables">
                 <div>
+                    <label>choose a day in a week</label>
                     <select id="selector3D">
-                        <option value="0">none</option>
-                        <option value="1" selected="selected">time</option>
-                        <option value="2">height</option>
-                        <option value="3">weekly frequnce</option>
-                        <option value="4">speed</option>
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                        <option value="7" selected="selected">Whole week</option>
                     </select>
-                    <label>third dimension</label>
                 </div>
-
-            </div>
-
-            <div class="row" id="contentrowfor3D" >
-                <div id="visDiv"></div>
             </div>
         </div>
     </div>
