@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="yuhang">
+    <title>3D Flow Map Designs</title>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/designsSpace.css">
+    <link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet'/>
+    <!-- D3 -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-scale.v1.min.js"></script>
+    <script src="https://d3js.org/d3-path.v1.min.js"></script>
+    <!-- Three.js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://rawgit.com/mrdoob/three.js/master/build/three.min.js"></script>
+    <script src="https://rawgit.com/mrdoob/three.js/master/examples/js/controls/TrackballControls.js"></script>
+    <script src="https://rawgit.com/mrdoob/three.js/master/examples/js/renderers/CSS3DRenderer.js"></script>
+    <!-- Mapbox -->
+    <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+    <!-- Custom Theme JavaScript -->
+    <script src="js/icelandlocal.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body onload="designInit()">
+<h1>3D Flow Map Designs</h1>
+
+
+<div class= "site-wrapper">
+    <div class="site-wrapper-inner">
+        <div class="cover-container">
+            <div id="visvariables">
+                <div>
+                    <select id="selector3D">
+                        <option value="0" selected="selected">time</option>
+                        <option value="1">height</option>
+                        <option value="2">speed</option>
+                        <option value="3">none</option>
+                    </select>
+                    <label>third dimension</label>
+                </div>
+
+            </div>
+
+            <div class="row" id="contentrowfor3D" >
+                <div id="visDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
