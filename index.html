@@ -25,11 +25,21 @@
     <!-- Custom Theme JavaScript -->
     <script src="js/icelandlocal.js"></script>
 
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+
+
+
     <![endif]-->
 </head>
 
@@ -55,23 +65,82 @@
         <div class="cover-container">
             <div id="visvariables">
                 <div>
-                    <label>choose a day in a week</label>
-                    <select id="selector3D">
-                        <option value="0">Sunday</option>
-                        <option value="1">Monday</option>
-                        <option value="2">Tuesday</option>
-                        <option value="3">Wednesday</option>
-                        <option value="4">Thursday</option>
-                        <option value="5">Friday</option>
-                        <option value="6">Saturday</option>
-                        <option value="7" selected="selected">Whole week</option>
-                    </select>
+                    <table class="table bg-info" id="matrixOD">
+
+                        <thead>
+                        <tr><td>O-D</td>
+                            <td>P</td>
+                            <td>H</td>
+                            <td>T</td>
+                            <td>QL</td>
+                            <td>QT</td>
+                            </tr></thead>
+                        <tr><td>3D</td>
+                            <td><input type="radio" name="radio3D" checked value="point"></td>
+                            <td><input type="radio" name="radio3D" value="height"></td>
+                            <td><input type="radio" name="radio3D" value="time"></td>
+                            <td><input type="radio" name="radio3D" value="attrQL"></td>
+                            <td><input type="radio" name="radio3D" value="attrQT"></td></tr>
+                        <tr><td>size</td>
+                            <td><input id="checkbox-OD-size-point" type="checkbox" disabled></td>
+                            <td><input id="checkbox-OD-size-height" type="checkbox" disabled></td>
+                            <td><input id="checkbox-OD-size-time" type="checkbox" disabled></td>
+                            <td><input id="checkbox-OD-size-attrQL" type="checkbox"></td>
+                            <td><input id="checkbox-OD-size-attrQT" type="checkbox"></td></tr>
+                        <tr><td>color</td>
+                            <td><input id="checkbox-OD-color-point" type="checkbox" disabled></td>
+                            <td><input id="checkbox-OD-color-height" type="checkbox" disabled></td>
+                            <td><input id="checkbox-OD-color-time" type="checkbox" disabled></td>
+                            <td><input id="checkbox-OD-color-attrQL" type="checkbox">
+                            <td><input id="checkbox-OD-color-attrQT" type="checkbox"></td>
+                           </tr>
+
+                    </table>
                 </div>
+
+                <div>
+                    <table class="table bg-info" id="matrixFlow">
+                        <thead>
+                        <tr><td>Flow</td>
+                            <td>L</td>
+                            <td>H</td>
+                            <td>T</td>
+                            <td>QL</td>
+                            <td>QT</td></tr></thead>
+                        <tr><td>3D</td>
+                            <td><input type="radio" name="radioFlow" checked value="link"></td>
+                            <td><input type="radio" name="radioFlow" value="height"></td>
+                            <td><input type="radio" name="radioFlow" value="time"></td>
+                            <td><input type="radio" name="radioFlow" value="attrQL"></td>
+                            <td><input type="radio" name="radioFlow" value="attrQT"></td></tr>
+                        <tr><td>size</td>
+                            <td><input id="checkbox-flow-size-link" type="checkbox" disabled></td>
+                            <td><input id="checkbox-flow-size-height" type="checkbox" disabled></td>
+                            <td><input id="checkbox-flow-size-time" type="checkbox" disabled></td>
+                            <td><input id="checkbox-flow-size-attrQL" type="checkbox" disabled></td>
+                            <td><input id="checkbox-flow-size-attrQT" type="checkbox"></td></tr>
+                        <tr><td>color</td>
+                            <td><input type="radio" name="radioFlowColor" checked value="link"></td>
+                            <td><input type="radio" name="radioFlowColor" value="height" disabled></td>
+                            <td><input type="radio" name="radioFlowColor" value="time" disabled></td>
+                            <td><input type="radio" name="radioFlowColor" value="attrQL" checked></td>
+                            <td><input type="radio" name="radioFlowColor" value="attrQT"></td></tr>
+                        <tr><td>animation</td>
+                            <td><input id="checkbox-flow-animation-link" type="checkbox"></td>
+                            <td><input id="checkbox-flow-animation-height" type="checkbox"></td>
+                            <td><input id="checkbox-flow-animation-time" type="checkbox"></td>
+                            <td><input id="checkbox-flow-animation-attrQL" type="checkbox"></td>
+                            <td><input id="checkbox-flow-animation-attrQT" type="checkbox"></td></tr>
+                    </table>
+                </div>
+
+                <div>
+                    <label  ID="timer" >00:00</label>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
-
-
 </body>
 </html>
