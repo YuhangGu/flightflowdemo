@@ -513,8 +513,6 @@ function redrawFlows(flowType){
     var heightOrdinal = d3.scaleOrdinal([50, 250, 450 ]).domain(companys);
     var colorOrdinal = d3.scaleOrdinal(["#3fd464", "#ffd60d", "#0983ba" ]).domain(companys);
 
-
-
     var flowchecksizeAttr = $('#checkbox-flow-size-attrQT')[0].checked;
 
     var flowcolorattr = $('input[name="radioFlowColor"]:checked').val();
@@ -727,98 +725,109 @@ function visualAnimation(){
 
     if($('#checkbox-flow-animation-link')[0].checked ){
 
+        var tweenDaytime = null;
+        var groupTweenFlows = new TWEEN.Group();
 
-        var daylengthIn3DSecne = 50000;
-        var position = { x: 5*60 };
-        var minutes = 0;
-        var tween = new TWEEN.Tween( position )
-            .to({ x:  24 * 60 }, daylengthIn3DSecne)
-            .onUpdate(function() {
+        initAnimation( animate);
 
-                if(minutes !=  Math.floor(position.x % 60) ){
+        function initAnimation( callback) {
 
-                    //console.log( Math.floor(position.x/ 60) ,"h", Math.floor(position.x % 60)  ,"min" );
+            var companys =["airiceland", "eagleair",  "norlandair"];
+            var colorOrdinal = d3.scaleOrdinal(["#3fd464", "#ffd60d", "#0983ba" ]).domain(companys);
 
-                    $("#timer").text( Math.floor(position.x/ 60)+":" +Math.floor(position.x % 60) );
-                    minutes =  Math.floor(position.x % 60);
-                }
+            var daylengthIn3DSecne = 50000;
 
-            })
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .start();
+            var position = { x : 0 };
+            var minutes = 0;
 
+            Vis.dataLocalFlights.forEach(function (d) {
+                //console.log(d);
 
-        Vis.dataLocalFlights.forEach(function (d) {
-            //console.log(d);
+                var pointO = projectionWorldtoVis([d.originloglat[1], d.originloglat[0]]);
+                var pointD = projectionWorldtoVis([d.destloglat[1], d.destloglat[0]]);
 
-            var pointO = projectionWorldtoVis([d.originloglat[1], d.originloglat[0]]);
-            var pointD = projectionWorldtoVis([d.destloglat[1], d.destloglat[0]]);
+                var origin = new THREE.Vector3( pointO[0] ,  pointO[1] , 1);
+                var destination = new THREE.Vector3( pointD[0] , pointD[1] , 1);
 
-            var origin = new THREE.Vector3( pointO[0] ,  pointO[1] , 1);
-            var destination = new THREE.Vector3( pointD[0] , pointD[1] , 1);
+                var ctrl1 = new THREE.Vector3( 3*pointO[0]/4 + pointD[0]/4 ,  (3*pointO[1]/4 + pointD[1]/4),   60 * 24 / 5);
+                var ctrl2 = new THREE.Vector3( pointO[0]/4 + 3*pointD[0]/4, pointO[1]/4 + 3*pointD[1]/4 ,   60 * 24 / 5 );
 
-            var ctrl1 = new THREE.Vector3( 3*pointO[0]/4 + pointD[0]/4 ,  (3*pointO[1]/4 + pointD[1]/4),   60 * 24 / 5);
-            var ctrl2 = new THREE.Vector3( pointO[0]/4 + 3*pointD[0]/4, pointO[1]/4 + 3*pointD[1]/4 ,   60 * 24 / 5 );
+                var curve = new THREE.CubicBezierCurve3(origin,ctrl1,ctrl2,destination);
 
-            var curve = new THREE.CubicBezierCurve3(origin,ctrl1,ctrl2,destination);
-
-            var sphereGeometry = new THREE.SphereGeometry( 32, 32, 32 );
-            var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
-            var sphere = new THREE.Mesh( sphereGeometry, material );
-
-            sphere.position.x = pointO[0];
-            sphere.position.y = pointO[1];
-            sphere.position.z = 0;
-            sphere.name = "animateOD"
-
-            Vis.glScene.add( sphere );
+                var sphereGeometry = new THREE.SphereGeometry( 32, 32, 32 );
 
 
-            var timeArr1 = d.departure.split(":");
+                var material = new THREE.MeshLambertMaterial( {color: colorOrdinal(d.companyname) } );
+                var sphere = new THREE.Mesh( sphereGeometry, material );
 
-            var timeO = parseInt(timeArr1[0])*60 + parseInt(timeArr1[1]);
+                sphere.position.x = pointO[0];
+                sphere.position.y = pointO[1];
+                sphere.position.z = 0;
+                sphere.name = "animateOD"
 
-            var timeArr2 = d.arrival.split(":");
-            var timeD = parseInt(timeArr2[0])*60 + parseInt(timeArr2[1]);
-
-            var daylength = 24*60;
+                Vis.glScene.add( sphere );
 
 
-            //start from 7h
-            timeO = timeO - 5*60;
-            timeD = timeD - 5*60;
+                var timeArr1 = d.departure.split(":");
 
-            //var daylengthIn3DSecne = 50000;
-            var secondsAnimation = (timeD - timeO)/daylength * daylengthIn3DSecne;
+                var timeO = parseInt(timeArr1[0])*60 + parseInt(timeArr1[1]);
 
-            var position = { x: 0 };
+                var timeArr2 = d.arrival.split(":");
+                var timeD = parseInt(timeArr2[0])*60 + parseInt(timeArr2[1]);
 
-            var tween = new TWEEN.Tween( position )
-                .to({ x: 1 }, secondsAnimation)
-                .onUpdate(function() {
-                    var pos = curve.getPointAt( position.x );
-                    sphere.position.x = pos.x;
-                    sphere.position.y = pos.y;
-                    sphere.position.z = pos.z;
-                    //console.log(position.x);
+                var daylength = 24*60;
+
+                //start from 3h
+                //timeO = timeO - 3*60;
+                //timeD = timeD - 3*60;
+
+                //var daylengthIn3DSecne = 50000;
+                var secondsAnimation = (timeD - timeO)/daylength * daylengthIn3DSecne;
+
+                var position = { x: 0 };
+
+                var tween = new TWEEN.Tween( position,groupTweenFlows )
+                    .to({ x: 1 }, secondsAnimation)
+                    .onUpdate(function() {
+                        var pos = curve.getPointAt( position.x );
+                        sphere.position.x = pos.x;
+                        sphere.position.y = pos.y;
+                        sphere.position.z = pos.z;
+                        //console.log(position.x);
+                    })
+                    .easing(TWEEN.Easing.Quadratic.Out)
+                    .delay( timeO / daylength * daylengthIn3DSecne)
+                    .start();
+
+            });
+
+            tweenDaytime = new TWEEN.Tween( position)
+                .to({ x:  24 * 60 }, daylengthIn3DSecne)
+                .onStart(function () {
+
                 })
-                .easing(TWEEN.Easing.Quadratic.Out)
-                .delay(timeO/daylength * daylengthIn3DSecne)
+                .onUpdate(function() {
+                    $("#timer").text(
+                        Math.floor(position.x / 60)
+                        + ":" + Math.floor(position.x % 60) );
+                    minutes =  Math.floor(position.x % 60);
+                })
+                //.easing(TWEEN.Easing.Quadratic.Out)
+                //.repeat(2)
                 .start();
 
-        });
 
+            setTimeout(callback, 200);
 
-        animate();
-        function animate( ){
-            requestAnimationFrame(animate);
-            TWEEN.update();
         }
 
+
+        function animate( ){
+            requestAnimationFrame(animate);
+            groupTweenFlows.update();
+            TWEEN.update();
+        }
     }
-
-
-
 
 }
 
