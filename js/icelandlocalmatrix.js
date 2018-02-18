@@ -86,6 +86,9 @@ var Vis = {
     airportsPos : [],
     maxWholeWeek:0,
 
+    // space time cube
+    dataLocalFlights : null
+
 }
 
 function designInit() {
@@ -158,6 +161,14 @@ function dataProcessing(callback) {
             var point = projectionWorldtoVis([ parseFloat(d[0]) , parseFloat(d[1])]);
             return [ point[0] , point[1] ,parseFloat(d[2]) ];
         });
+
+    });
+
+
+    d3.json("data/icelandlocal.json", function(error, data){
+
+        Vis.dataLocalFlights = data;
+        //console.log(data);
 
     });
 
@@ -349,6 +360,7 @@ function flow3DBuilderWithMatrix(  ){
     var posrecorder = new Array(Vis.matrixAll.length);
     posrecorder.fill(0);
 
+    /*
     for(var i = 0; i < Vis.matrixAll.length; i++){
 
         for(var j = 0; j < Vis.matrixAll.length; j++){
@@ -359,12 +371,26 @@ function flow3DBuilderWithMatrix(  ){
             }
         }
     }
+    */
+
+    for(var i = 0; i < Vis.matrixAll.length; i++){
+
+        for(var j = 0; j < i; j++){
+
+            if(Vis.matrixAll[i][j] != 0 ){
+                createFlow(Vis.airportsPos[i],Vis.airportsPos[j], posrecorder[i], thridDlinear(Vis.matrixAll[i][j]) ,1);
+                posrecorder[i] =  posrecorder[i] + thridDlinear(Vis.matrixAll[i][j]);
+
+                createFlow(Vis.airportsPos[i],Vis.airportsPos[j], posrecorder[i], thridDlinear(Vis.matrixAll[j][i]) ,-1);
+                posrecorder[i] =  posrecorder[i] + thridDlinear(Vis.matrixAll[j][i]);
+            }
+        }
+    }
     
     
-    function createFlow( origin , destination, pos , height) {
+    function createFlow( origin , destination, pos , height, direction) {
 
         var geo = new THREE.Geometry();
-
 
         geo.vertices.push(new THREE.Vector3(origin[0],origin[1],pos));
         geo.vertices.push(new THREE.Vector3(destination[0],destination[1],pos));
@@ -376,10 +402,20 @@ function flow3DBuilderWithMatrix(  ){
         geo.faces.push( new THREE.Face3(2,3,0));
         geo.faces.push( new THREE.Face3(0,3,2));
 
-        var material = new THREE.MeshBasicMaterial( { color: 0xE8007A ,side: THREE.FrontSide, opacity:0.5} );
-        var mesh = new THREE.Mesh( geo, material );
-        mesh.name = "flows3D";
-        Vis.glScene.add( mesh );
+
+        if(direction == 1){
+            var material = new THREE.MeshBasicMaterial( { color: 0xE8007A ,side: THREE.FrontSide, opacity:0.5} );
+            var mesh = new THREE.Mesh( geo, material );
+            mesh.name = "flows3D";
+            Vis.glScene.add( mesh );
+        }
+        if(direction == -1){
+            var material = new THREE.MeshBasicMaterial( { color: 0x00B182 ,side: THREE.FrontSide, opacity:0.5} );
+            var mesh = new THREE.Mesh( geo, material );
+            mesh.name = "flows3D";
+            Vis.glScene.add( mesh );
+        }
+
 
     }
 

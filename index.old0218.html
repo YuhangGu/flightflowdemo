@@ -6,9 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="yuhang">
-    <title>3D Flow Map Iceland Flight</title>
+    <title>3D Flow Map Designs</title>
     <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="css/icelandlocal.css">
+    <link rel="stylesheet" type="text/css" href="css/designsSpace.css">
     <link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet'/>
     <!-- D3 -->
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -29,7 +29,8 @@
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/17.2.0/Tween.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -77,9 +78,9 @@
                         <tr><td>3D</td>
                             <td><input type="radio" name="radio3D" checked value="point"></td>
                             <td><input type="radio" name="radio3D" value="height"></td>
-                            <td><input type="radio" name="radio3D" value="time" disabled></td>
+                            <td><input type="radio" name="radio3D" value="time"></td>
                             <td><input type="radio" name="radio3D" value="attrQL"></td>
-                            <td><input type="radio" name="radio3D" value="attrQT" disabled></td></tr>
+                            <td><input type="radio" name="radio3D" value="attrQT"></td></tr>
                         <tr><td>size</td>
                             <td><input id="checkbox-OD-size-point" type="checkbox" disabled></td>
                             <td><input id="checkbox-OD-size-height" type="checkbox" disabled></td>
@@ -124,74 +125,12 @@
                             <td><input type="radio" name="radioFlowColor" value="time" disabled></td>
                             <td><input type="radio" name="radioFlowColor" value="attrQL" checked></td>
                             <td><input type="radio" name="radioFlowColor" value="attrQT"></td></tr>
-                        <tr><td>transparency</td>
-                            <td><input type="radio" name="radioFlowTransparency" value="link" disabled></td>
-                            <td><input type="radio" name="radioFlowTransparency" value="height" disabled></td>
-                            <td><input type="radio" name="radioFlowTransparency" value="time" disabled></td>
-                            <td><input type="radio" name="radioFlowTransparency" value="attrQL" disabled></td>
-                            <td><input type="radio" name="radioFlowTransparency" value="attrQT" disabled></td></tr>
-                        <tr><td>texture</td>
-                            <td><input type="radio" name="radioFlowTexture" value="link" disabled></td>
-                            <td><input type="radio" name="radioFlowTexture" value="height" disabled></td>
-                            <td><input type="radio" name="radioFlowTexture" value="time" disabled></td>
-                            <td><input type="radio" name="radioFlowTexture" value="attrQL" disabled></td>
-                            <td><input type="radio" name="radioFlowTexture" value="attrQT" disabled></td></tr>
-                        <tr><td>order</td>
-                            <td><input id="checkbox-flow-order-link" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-order-height" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-order-time" type="checkbox"></td>
-                            <td><input id="checkbox-flow-order-attrQL" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-order-attrQT" type="checkbox" disabled></td></tr>
-                        <tr><td>duration</td>
-                            <td><input id="checkbox-flow-duration-link" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-duration-height" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-duration-time" type="checkbox"></td>
-                            <td><input id="checkbox-flow-duration-attrQL" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-duration-attrQT" type="checkbox" disabled></td></tr>
-                        <tr><td>frequency</td>
-                            <td><input id="checkbox-flow-frequency-link" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-frequency-height" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-frequency-time" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-frequency-attrQL" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-frequency-attrQT" type="checkbox"></td></tr>
-                    </table>
-                </div>
-                <div>
-                    <table class="table bg-info" id="shape">
-                        <thead>
-                        <tr><td>OD</td>
-                            <td>Point</td>
-                            <td>Cube</td>
-                            <td>Sphere</td></thead>
-                        <tr><td>shape</td>
-                            <td><input type="radio" name="radioODShape" checked value="point"></td>
-                            <td><input type="radio" name="radioODShape" value="cube"></td>
-                            <td><input type="radio" name="radioODShape" value="sphere"></td></td></tr>
-                        <tr><td>Flow</td>
-                            <td>Line</td>
-                            <td>Tube</td>
-                            <td>Wall</td>
-                            <td>Ribbon</td></tr>
-                        <tr><td>shape</td>
-                            <td><input type="radio" name="radioFlowShape" checked value="line"></td>
-                            <td><input type="radio" name="radioFlowShape" value="tube"></td>
-                            <td><input type="radio" name="radioFlowShape" value="wall"></td>
-                            <td><input type="radio" name="radioFlowShape" value="ribbon"></td></td></tr>
-                    </table>
-                </div>
-                <div>
-                    <table class="table bg-info" id="layout">
-                        <thead>
-                        <tr><td>OD Layout</td>
-                            <td>Same</td>
-                            <td>Stack</td>
-                            <td>Parallel</td>
-                            <td>Embed</td></thead>
-                        <tr><td> </td>
-                            <td><input type="radio" name="radioLayout" checked value="point"></td>
-                            <td><input type="radio" name="radioLayout" value="cube"></td>
-                            <td><input type="radio" name="radioLayout" value="sphere"></td></td>
-                            <td><input type="radio" name="radioLayout" value="cube"></td></tr>
+                        <tr><td>animation</td>
+                            <td><input id="checkbox-flow-animation-link" type="checkbox"></td>
+                            <td><input id="checkbox-flow-animation-height" type="checkbox"></td>
+                            <td><input id="checkbox-flow-animation-time" type="checkbox"></td>
+                            <td><input id="checkbox-flow-animation-attrQL" type="checkbox"></td>
+                            <td><input id="checkbox-flow-animation-attrQT" type="checkbox"></td></tr>
                     </table>
                 </div>
 
