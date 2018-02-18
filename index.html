@@ -62,143 +62,137 @@
 <div class="site-wrapper">
     <div class="site-wrapper-inner">
         <div class="cover-container">
-            <div id="visvariables">
-                <div>
-                    <table class="table bg-info" id="matrixOD">
+            <div id="matrixOD">
+                <table class="table bg-info" >
+                    <thead>
+                    <tr><td>O-D</td>
+                        <td>P</td>
+                        <td>H</td>
+                        <td>T</td>
+                        <td>QL</td>
+                        <td>QT</td>
+                    </tr></thead>
+                    <tr><td>3D</td>
+                        <td><input type="radio" name="radio3D" checked value="point"></td>
+                        <td><input type="radio" name="radio3D" value="height"></td>
+                        <td><input type="radio" name="radio3D" value="time" disabled></td>
+                        <td><input type="radio" name="radio3D" value="attrQL"></td>
+                        <td><input type="radio" name="radio3D" value="attrQT" disabled></td></tr>
+                    <tr><td>size</td>
+                        <td><input id="checkbox-OD-size-point" type="checkbox" disabled></td>
+                        <td><input id="checkbox-OD-size-height" type="checkbox" disabled></td>
+                        <td><input id="checkbox-OD-size-time" type="checkbox" disabled></td>
+                        <td><input id="checkbox-OD-size-attrQL" type="checkbox"></td>
+                        <td><input id="checkbox-OD-size-attrQT" type="checkbox"></td></tr>
+                    <tr><td>color</td>
+                        <td><input id="checkbox-OD-color-point" type="checkbox" disabled></td>
+                        <td><input id="checkbox-OD-color-height" type="checkbox" disabled></td>
+                        <td><input id="checkbox-OD-color-time" type="checkbox" disabled></td>
+                        <td><input id="checkbox-OD-color-attrQL" type="checkbox">
+                        <td><input id="checkbox-OD-color-attrQT" type="checkbox"></td>
+                    </tr>
 
-                        <thead>
-                        <tr><td>O-D</td>
-                            <td>P</td>
-                            <td>H</td>
-                            <td>T</td>
-                            <td>QL</td>
-                            <td>QT</td>
-                            </tr></thead>
-                        <tr><td>3D</td>
-                            <td><input type="radio" name="radio3D" checked value="point"></td>
-                            <td><input type="radio" name="radio3D" value="height"></td>
-                            <td><input type="radio" name="radio3D" value="time" disabled></td>
-                            <td><input type="radio" name="radio3D" value="attrQL"></td>
-                            <td><input type="radio" name="radio3D" value="attrQT" disabled></td></tr>
-                        <tr><td>size</td>
-                            <td><input id="checkbox-OD-size-point" type="checkbox" disabled></td>
-                            <td><input id="checkbox-OD-size-height" type="checkbox" disabled></td>
-                            <td><input id="checkbox-OD-size-time" type="checkbox" disabled></td>
-                            <td><input id="checkbox-OD-size-attrQL" type="checkbox"></td>
-                            <td><input id="checkbox-OD-size-attrQT" type="checkbox"></td></tr>
-                        <tr><td>color</td>
-                            <td><input id="checkbox-OD-color-point" type="checkbox" disabled></td>
-                            <td><input id="checkbox-OD-color-height" type="checkbox" disabled></td>
-                            <td><input id="checkbox-OD-color-time" type="checkbox" disabled></td>
-                            <td><input id="checkbox-OD-color-attrQL" type="checkbox">
-                            <td><input id="checkbox-OD-color-attrQT" type="checkbox"></td>
-                           </tr>
-
-                    </table>
-                </div>
-
-                <div>
-                    <table class="table bg-info" id="matrixFlow">
-                        <thead>
-                        <tr><td>Flow</td>
-                            <td>L</td>
-                            <td>H</td>
-                            <td>T</td>
-                            <td>QL</td>
-                            <td>QT</td></tr></thead>
-                        <tr><td>3D</td>
-                            <td><input type="radio" name="radioFlow" checked value="link"></td>
-                            <td><input type="radio" name="radioFlow" value="height"></td>
-                            <td><input type="radio" name="radioFlow" value="time"></td>
-                            <td><input type="radio" name="radioFlow" value="attrQL"></td>
-                            <td><input type="radio" name="radioFlow" value="attrQT"></td></tr>
-                        <tr><td>size</td>
-                            <td><input id="checkbox-flow-size-link" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-size-height" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-size-time" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-size-attrQL" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-size-attrQT" type="checkbox"></td></tr>
-                        <tr><td>color</td>
-                            <td><input type="radio" name="radioFlowColor" checked value="link"></td>
-                            <td><input type="radio" name="radioFlowColor" value="height" disabled></td>
-                            <td><input type="radio" name="radioFlowColor" value="time" disabled></td>
-                            <td><input type="radio" name="radioFlowColor" value="attrQL" checked></td>
-                            <td><input type="radio" name="radioFlowColor" value="attrQT"></td></tr>
-                        <tr><td>transparency</td>
-                            <td><input type="radio" name="radioFlowTransparency" value="link" disabled></td>
-                            <td><input type="radio" name="radioFlowTransparency" value="height" disabled></td>
-                            <td><input type="radio" name="radioFlowTransparency" value="time" disabled></td>
-                            <td><input type="radio" name="radioFlowTransparency" value="attrQL" disabled></td>
-                            <td><input type="radio" name="radioFlowTransparency" value="attrQT" disabled></td></tr>
-                        <tr><td>texture</td>
-                            <td><input type="radio" name="radioFlowTexture" value="link" disabled></td>
-                            <td><input type="radio" name="radioFlowTexture" value="height" disabled></td>
-                            <td><input type="radio" name="radioFlowTexture" value="time" disabled></td>
-                            <td><input type="radio" name="radioFlowTexture" value="attrQL" disabled></td>
-                            <td><input type="radio" name="radioFlowTexture" value="attrQT" disabled></td></tr>
-                        <tr><td>order</td>
-                            <td><input id="checkbox-flow-order-link" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-order-height" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-order-time" type="checkbox"></td>
-                            <td><input id="checkbox-flow-order-attrQL" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-order-attrQT" type="checkbox" disabled></td></tr>
-                        <tr><td>duration</td>
-                            <td><input id="checkbox-flow-duration-link" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-duration-height" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-duration-time" type="checkbox"></td>
-                            <td><input id="checkbox-flow-duration-attrQL" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-duration-attrQT" type="checkbox" disabled></td></tr>
-                        <tr><td>frequency</td>
-                            <td><input id="checkbox-flow-frequency-link" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-frequency-height" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-frequency-time" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-frequency-attrQL" type="checkbox" disabled></td>
-                            <td><input id="checkbox-flow-frequency-attrQT" type="checkbox"></td></tr>
-                    </table>
-                </div>
-                <div>
-                    <table class="table bg-info" id="shape">
-                        <thead>
-                        <tr><td>OD</td>
-                            <td>Point</td>
-                            <td>Cube</td>
-                            <td>Sphere</td></thead>
-                        <tr><td>shape</td>
-                            <td><input type="radio" name="radioODShape" checked value="point"></td>
-                            <td><input type="radio" name="radioODShape" value="cube"></td>
-                            <td><input type="radio" name="radioODShape" value="sphere"></td></td></tr>
-                        <tr><td>Flow</td>
-                            <td>Line</td>
-                            <td>Tube</td>
-                            <td>Wall</td>
-                            <td>Ribbon</td></tr>
-                        <tr><td>shape</td>
-                            <td><input type="radio" name="radioFlowShape" checked value="line"></td>
-                            <td><input type="radio" name="radioFlowShape" value="tube"></td>
-                            <td><input type="radio" name="radioFlowShape" value="wall"></td>
-                            <td><input type="radio" name="radioFlowShape" value="ribbon"></td></td></tr>
-                    </table>
-                </div>
-                <div>
-                    <table class="table bg-info" id="layout">
-                        <thead>
-                        <tr><td>OD Layout</td>
-                            <td>Same</td>
-                            <td>Stack</td>
-                            <td>Parallel</td>
-                            <td>Embed</td></thead>
-                        <tr><td> </td>
-                            <td><input type="radio" name="radioLayout" checked value="point"></td>
-                            <td><input type="radio" name="radioLayout" value="cube"></td>
-                            <td><input type="radio" name="radioLayout" value="sphere"></td></td>
-                            <td><input type="radio" name="radioLayout" value="cube"></td></tr>
-                    </table>
-                </div>
-
-                <div>
-                    <label  ID="timer" >00:00</label>
-                </div>
-
+                </table>
+            </div>
+            <div id="matrixFlow">
+                <table class="table bg-info" >
+                    <thead>
+                    <tr><td>Flow</td>
+                        <td>L</td>
+                        <td>H</td>
+                        <td>T</td>
+                        <td>QL</td>
+                        <td>QT</td></tr></thead>
+                    <tr><td>3D</td>
+                        <td><input type="radio" name="radioFlow" checked value="link"></td>
+                        <td><input type="radio" name="radioFlow" value="height"></td>
+                        <td><input type="radio" name="radioFlow" value="time"></td>
+                        <td><input type="radio" name="radioFlow" value="attrQL"></td>
+                        <td><input type="radio" name="radioFlow" value="attrQT"></td></tr>
+                    <tr><td>size</td>
+                        <td><input id="checkbox-flow-size-link" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-size-height" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-size-time" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-size-attrQL" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-size-attrQT" type="checkbox"></td></tr>
+                    <tr><td>color</td>
+                        <td><input type="radio" name="radioFlowColor" checked value="link"></td>
+                        <td><input type="radio" name="radioFlowColor" value="height" disabled></td>
+                        <td><input type="radio" name="radioFlowColor" value="time" disabled></td>
+                        <td><input type="radio" name="radioFlowColor" value="attrQL" checked></td>
+                        <td><input type="radio" name="radioFlowColor" value="attrQT"></td></tr>
+                    <tr><td>transparency</td>
+                        <td><input type="radio" name="radioFlowTransparency" value="link" disabled></td>
+                        <td><input type="radio" name="radioFlowTransparency" value="height" disabled></td>
+                        <td><input type="radio" name="radioFlowTransparency" value="time" disabled></td>
+                        <td><input type="radio" name="radioFlowTransparency" value="attrQL" disabled></td>
+                        <td><input type="radio" name="radioFlowTransparency" value="attrQT" disabled></td></tr>
+                    <tr><td>texture</td>
+                        <td><input type="radio" name="radioFlowTexture" value="link" disabled></td>
+                        <td><input type="radio" name="radioFlowTexture" value="height" disabled></td>
+                        <td><input type="radio" name="radioFlowTexture" value="time" disabled></td>
+                        <td><input type="radio" name="radioFlowTexture" value="attrQL" disabled></td>
+                        <td><input type="radio" name="radioFlowTexture" value="attrQT" disabled></td></tr>
+                    <tr><td>order</td>
+                        <td><input id="checkbox-flow-order-link" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-order-height" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-order-time" type="checkbox"></td>
+                        <td><input id="checkbox-flow-order-attrQL" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-order-attrQT" type="checkbox" disabled></td></tr>
+                    <tr><td>duration</td>
+                        <td><input id="checkbox-flow-duration-link" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-duration-height" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-duration-time" type="checkbox"></td>
+                        <td><input id="checkbox-flow-duration-attrQL" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-duration-attrQT" type="checkbox" disabled></td></tr>
+                    <tr><td>frequency</td>
+                        <td><input id="checkbox-flow-frequency-link" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-frequency-height" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-frequency-time" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-frequency-attrQL" type="checkbox" disabled></td>
+                        <td><input id="checkbox-flow-frequency-attrQT" type="checkbox"></td></tr>
+                </table>
+            </div>
+            <div id="shape">
+                <table class="table bg-info" >
+                    <thead>
+                    <tr><td>OD</td>
+                        <td>Point</td>
+                        <td>Cube</td>
+                        <td>Sphere</td></thead>
+                    <tr><td>shape</td>
+                        <td><input type="radio" name="radioODShape" checked value="point"></td>
+                        <td><input type="radio" name="radioODShape" value="cube"></td>
+                        <td><input type="radio" name="radioODShape" value="sphere"></td></td></tr>
+                    <tr><td>Flow</td>
+                        <td>Line</td>
+                        <td>Tube</td>
+                        <td>Wall</td>
+                        <td>Ribbon</td></tr>
+                    <tr><td>shape</td>
+                        <td><input type="radio" name="radioFlowShape" checked value="line"></td>
+                        <td><input type="radio" name="radioFlowShape" value="tube"></td>
+                        <td><input type="radio" name="radioFlowShape" value="wall"></td>
+                        <td><input type="radio" name="radioFlowShape" value="ribbon"></td></td></tr>
+                </table>
+            </div>
+            <div id="layout">
+                <table class="table bg-info" >
+                    <thead>
+                    <tr><td>OD Layout</td>
+                        <td>Same</td>
+                        <td>Stack</td>
+                        <td>Parallel</td>
+                        <td>Embed</td></thead>
+                    <tr><td> </td>
+                        <td><input type="radio" name="radioLayout" checked value="point"></td>
+                        <td><input type="radio" name="radioLayout" value="cube"></td>
+                        <td><input type="radio" name="radioLayout" value="sphere"></td></td>
+                        <td><input type="radio" name="radioLayout" value="cube"></td></tr>
+                </table>
+            </div>
+            <div id="timerContainer">
+                <label  ID="timer" >00:00</label>
             </div>
         </div>
     </div>
