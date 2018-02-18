@@ -163,6 +163,12 @@ h1 {
     left: 20px;
 }
 
+#timerContainer{
+    top: 20%;
+    left: 48%;
+    position: absolute;
+}
+
 #timer{
     background-color: #ffffff;
     font-size: 40px;
